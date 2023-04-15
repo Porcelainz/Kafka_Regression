@@ -1,0 +1,36 @@
+{"time":"1", "temp":"1"}
+{"time":"2", "temp":"3"}
+{"time":"3", "temp":"5"}
+{"time":"4", "temp":"7"}
+{"time":"5", "temp":"9"}
+{"time":"6", "temp":"11"}
+{"time":"7", "temp":"13"}
+{"time":"8", "temp":"15"}
+{"time":"9", "temp":"17"}
+
+
+{"time":"1", "temp":"5"}
+{"time":"2", "temp":"10"}
+{"time":"3", "temp":"15"}
+{"time":"4", "temp":"20"}
+{"time":"5", "temp":"25"}
+{"time":"6", "temp":"30"}
+{"time":"7", "temp":"35"}
+{"time":"8", "temp":"40"}
+{"time":"9", "temp":"45"}
+
+{"time":"1", "temp":}
+{"time":"2", "temp":"20"}
+{"time":"3", "temp":"30"}
+{"time":"4", "temp":"40"}
+{"time":"5", "temp":"50"}
+{"time":"6", "temp":"60"}
+{"time":"7", "temp":"70"}
+{"time":"8", "temp":"80"}
+{"time":"9", "temp":"90"}
+
+{"time":"1", "temp":"10"}
+{"time":"2", "temp":"20"}
+{"time":"3", "temp":"30"}
+{"time":"4", "temp":"40"}
+{"time":"5", "temp":"50"}

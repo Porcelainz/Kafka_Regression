@@ -1,0 +1,32 @@
+{"time":"1","data" : {"degree":"23"}}
+
+
+{"time":"1","data" : {"degree":"3"}}
+{"time":"2","data" : {"degree":"6"}}
+{"time":"3","data" : {"degree":"9"}}
+{"time":"4","data" : {"degree":"12"}}
+{"time":"5","data" : {"degree":"15"}}
+{"time":"6","data" : {"degree":"18"}}
+
+{"time":"10","data" : {"degree":"10"}}
+{"time":"20","data" : {"degree":"30"}}
+{"time":"30","data" : {"degree":"45"}}
+{"time":"40","data" : {"degree":"60"}}
+{"time":"50","data" : {"degree":"75"}}
+{"time":"60","data" : {"degree":"90"}}
+
+{"time":"10","data" : {"degree":"10"}}
+{"time":"20","data" : {"degree":"20"}}
+{"time":"30","data" : {"degree":"30"}}
+{"time":"40","data" : {"degree":"40"}}
+{"time":"50","data" : {"degree":"50"}}
+{"time":"60","data" : {"degree":"60"}}
+
+
+
+{"time":"1","data" : {"degree":"0"}}
+{"time":"2","data" : {"degree":"7"}}
+{"time":"3","data" : {"degree":"15"}}
+{"time":"4","data" : {"degree":"24"}}
+{"time":"5","data" : {"degree":"33"}}
+{"time":"6","data" : {"degree":"40"}}
