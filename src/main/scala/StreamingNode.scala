@@ -8,25 +8,31 @@ import org.apache.log4j.{Level, Logger}
 import spire.std.float
 
 
+
 class NotificationNode(_name: String, _url: String = "") extends Serializable {
   var name = _name
   var parent: NotificationNode = _ 
   var result: Boolean = false
   val url: String = _url 
+  var trueCount = 0
+  var limitation = 2
+
   def setParent(parent: NotificationNode): Unit = {
     this.parent = parent
   }
 
   def changeResult(result: Boolean): Unit = {
     this.result = result
-    println(name + result)
+    this.trueCount += 1 
+    println(name + ": "+ result)
+    println(name + ": " + trueCount)
     propagateResult
     //println(name + result)
   }
   
 
   def checkResult: Unit = {
-    if (this.result == true) {
+    if (this.trueCount == limitation) {
       sendNotification()
     }
 
@@ -40,7 +46,7 @@ class NotificationNode(_name: String, _url: String = "") extends Serializable {
 
   def propagateResult: Unit = {
     if (this.parent != null) {
-      this.parent.changeResult(this.result)
+      this.parent.changeResult(true)
       this.parent.checkResult
     }
   }
@@ -51,15 +57,19 @@ class NotificationNode(_name: String, _url: String = "") extends Serializable {
 
 
 
+class StreamingNode(appName: String, topic: String, node1: NotificationNode, node2: NotificationNode) extends Serializable{
+  //var counter = 0
+  // val node_1 = node1
+  // val node_2 = node2
 
-class StreamingNode(appName: String, topic: String) extends Serializable{
 
   val conf = new SparkConf()
     .setAppName(appName)
     .setMaster("local[*]")
+    .set("spark.streaming.stopGracefullyOnShutdown", "true")
   val spark = SparkSession.builder().config(conf).getOrCreate()
   spark.sparkContext.setLogLevel("ERROR")
-
+  spark.conf.set("spark.sql.streaming.checkpointLocation", "checkpoint")
   val kafkaServers = "localhost:9092"
   val kafkaTopic = topic
 
@@ -80,10 +90,13 @@ class StreamingNode(appName: String, topic: String) extends Serializable{
   )
   println(dataDf.schema)
   
-  val child = new NotificationNode("child", "")
-  val parent = new NotificationNode("parent", "https://maker.ifttt.com/trigger/scala_event/json/with/key/cyMr3y7V3Np-gzMAhWE8HM")
-  child.setParent(parent)
+  // val child1 = new NotificationNode("child1", "")
+  // val child2 = new NotificationNode("child2", "") 
+  //val parent = new NotificationNode("parent", "https://maker.ifttt.com/trigger/scala_event/json/with/key/cyMr3y7V3Np-gzMAhWE8HM")
+  // child1.setParent(parent)
+  // child2.setParent(parent)
 
+  //val childs = List(child1, child2)
 
 
   //my data format is string so if the row's value is scala_event then send a request to IFTTT
@@ -91,11 +104,12 @@ class StreamingNode(appName: String, topic: String) extends Serializable{
     if (!batchDF.isEmpty) {
       batchDF.foreach(x =>
         x(0).toString().toDouble match {
-          case d:Double if (d > 5.0) =>  child.changeResult(true)
+          case d:Double if (d > 5.0) =>  node1.changeResult(true)
+          case d:Double if (d < 3.0) =>  node2.changeResult(true)
             //  val testRequest = Http(
             //   "https://maker.ifttt.com/trigger/scala_event/json/with/key/cyMr3y7V3Np-gzMAhWE8HM"
             // ).asString.body
-          case _ => println("No match")
+          case _ => println("Counter: ")
         }
         // x(0) match {
         //   case "scala_event" =>
@@ -133,3 +147,5 @@ class StreamingNode(appName: String, topic: String) extends Serializable{
   }
 
 }
+
+
