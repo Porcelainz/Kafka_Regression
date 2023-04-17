@@ -19,15 +19,7 @@ object MainTest extends  App{
   //val parent = new NotificationNode("parent")
   node2.run()
   
-   def stateUpdateFunction(node: NotificationNode, data: Iterator[String], state: GroupState[NodeState]): NodeState = {
-    val currentState = state.getOption.getOrElse(NodeState(0))
-    val newTrueCount = data.count(_.toDouble > 5.0)
-    val newState = currentState.copy(trueCount = currentState.trueCount + newTrueCount)
-    state.update(newState)
-    node.trueCount = newState.trueCount
-    newState
-  }
-  
+   
   
 
   //node1.run()

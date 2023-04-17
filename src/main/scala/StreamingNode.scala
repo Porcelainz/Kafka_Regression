@@ -6,7 +6,8 @@ import org.apache.spark.sql.functions._
 import org.apache.spark.sql.streaming.{OutputMode, Trigger}
 import org.apache.log4j.{Level, Logger}
 import spire.std.float
-
+import java.io._
+import org.apache.hadoop.shaded.org.checkerframework.checker.units.qual.s
 
 
 class NotificationNode(_name: String, _url: String = "") extends Serializable {
@@ -14,8 +15,38 @@ class NotificationNode(_name: String, _url: String = "") extends Serializable {
   var parent: NotificationNode = _ 
   var result: Boolean = false
   val url: String = _url 
-  var trueCount = 0
-  var limitation = 2
+  var trueCount = readCountFromFile()
+  var limitation = 10
+
+  private def readCountFromFile(): Int = {
+    val file = new File(s"$name.txt")
+    if (file.exists()) {
+      val source = scala.io.Source.fromFile(file)
+      val count = source.mkString.toInt
+      source.close()
+      count
+    } else {
+      0
+    }
+  }
+  private def writeNodeCountToFile(count: Int): Unit = {
+    val file = new File(s"$name.txt")
+    val writer = new PrintWriter(file)
+    writer.write(count.toString)
+    writer.close()
+  }
+
+
+
+
+
+
+
+
+
+
+
+
 
   def setParent(parent: NotificationNode): Unit = {
     this.parent = parent
@@ -23,7 +54,8 @@ class NotificationNode(_name: String, _url: String = "") extends Serializable {
 
   def changeResult(result: Boolean): Unit = {
     this.result = result
-    this.trueCount += 1 
+    trueCount = readCountFromFile() + 1
+    writeNodeCountToFile(trueCount)
     println(name + ": "+ result)
     println(name + ": " + trueCount)
     propagateResult
