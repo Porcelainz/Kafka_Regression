@@ -5,24 +5,39 @@ import org.apache.spark.sql.functions._
 import org.apache.spark.sql.streaming.{OutputMode, Trigger}
 import org.apache.spark.sql.streaming.{GroupState, GroupStateTimeout}
 import org.apache.spark.sql.SQLContext
+import scalaj.http._
 class MyNode1(_name:String) extends Serializable{
   val name = _name
   var count: Int = 0
   var parent: MyNode = _
-
+  
 }
 case class MyNode(_name:String, var count:Int) extends Serializable{
   val name = _name
   //var count: Int = _count
   var parent: MyNode = _
-
+  var url: String = ""
+  val limitation = 10
   def setParent(parent: MyNode): Unit = {
     this.parent = parent
   }
   def propagate(value: Int): Unit = {
     if (parent != null) {
       parent.count += value
+      if (parent.count == limitation) {
+        parent.sendNotification()
+      }
       parent.propagate(value)
+    }
+  }
+
+  def setUrl(url: String): Unit = {
+    this.url = url
+  }
+
+  def sendNotification(): Unit = {
+    if (url != "" ) {
+      val testRequest = Http(url).asString.body
     }
   }
 
@@ -34,6 +49,7 @@ object MapGroupWithStateNode {
   val node1 = new MyNode("node1",0)
   val node2 = new MyNode("node2",0)
   val node3 = new MyNode("node3",0)
+  node3.setUrl("https://maker.ifttt.com/trigger/scala_event/json/with/key/cyMr3y7V3Np-gzMAhWE8HM")
   node1.setParent(node3)
   node2.setParent(node3)
   def updateNodeAcrossEvents(key: String,
