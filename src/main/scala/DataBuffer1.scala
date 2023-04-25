@@ -49,7 +49,6 @@ object DataBuffer1 {
         println(dataBuffer)
       }
 
-      
       if (counter == 5) {
         producer.send(new ProducerRecord[String,String]("temp-topic", dataBuffer.toString()))
         dataBuffer.clear()
