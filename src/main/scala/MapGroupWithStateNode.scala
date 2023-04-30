@@ -6,68 +6,65 @@ import org.apache.spark.sql.streaming.{OutputMode, Trigger}
 import org.apache.spark.sql.streaming.{GroupState, GroupStateTimeout}
 import org.apache.spark.sql.SQLContext
 import scalaj.http._
-class MyNode1(_name:String) extends Serializable{
-  val name = _name
-  var count: Int = 0
-  var parent: MyNode = _
-  
-}
-case class MyNode(_name:String, var count:Int) extends Serializable{
-  val name = _name
-  //var count: Int = _count
-  var parent: MyNode = _
-  var url: String = ""
-  val limitation = 10
-  def setParent(parent: MyNode): Unit = {
-    this.parent = parent
-  }
-  def propagate(value: Int): Unit = {
-    if (parent != null) {
-      parent.count += value
-      if (parent.count == limitation) {
-        parent.sendNotification()
-      }
-      parent.propagate(value)
-    }
-  }
-
-  def setUrl(url: String): Unit = {
-    this.url = url
-  }
-
-  def sendNotification(): Unit = {
-    if (url != "" ) {
-      val testRequest = Http(url).asString.body
-    }
-  }
-
-}
-
+import org.apache.spark.sql.{Dataset, Encoder, Encoders}
+import scala.reflect.runtime.universe.TypeTag
+import scala.collection.mutable.ArrayBuffer
+import org.apache.spark.sql.catalyst.expressions.Encode
+import scala.collection.mutable.HashMap
 
 object MapGroupWithStateNode {
 
-  val node1 = new MyNode("node1",0)
-  val node2 = new MyNode("node2",0)
-  val node3 = new MyNode("node3",0)
-  node3.setUrl("https://maker.ifttt.com/trigger/scala_event/json/with/key/cyMr3y7V3Np-gzMAhWE8HM")
-  node1.setParent(node3)
-  node2.setParent(node3)
-  def updateNodeAcrossEvents(key: String,
-                             values: Iterator[String],
-                             state: GroupState[MyNode]): Array[MyNode] = {
-    var currentCount = state.getOption.map(_.count).getOrElse(0)
-    var currentNode = node1
-    values.foreach(x => if (x.toInt > 5) {node1.count +=  + 1; node1.propagate(1); } 
-                              else {node2.count +=  + 1; node2.propagate(1);currentNode = node2})                  
-    val updatedNodeCount = Array(node1, node2, node3)
-    updatedNodeCount.foreach(x => println(x.name + " " + x.count))
-    updatedNodeCount.foreach(x => state.update(x))
-    // state.update(currentNode)
-    // state.update(node3)
-    updatedNodeCount
-  }
+  
+  
 
   def main(args: Array[String]): Unit = {
+
+    def generateID(_expression: String): Long = {
+    val predicatesAndOperators: List[Char] = _expression.toList
+    var id: Int = 0
+    for (char <- predicatesAndOperators) {
+      id += char.hashCode() * char.hashCode()
+    }
+
+    id
+  }
+
+  val tree = new ATree("1")
+  tree.insert("BTC>3^ETH>9^DOGE>10")
+  tree.insert("BTC>3^ETH>9^SOL>20")
+  tree.hen.foreach(x => tree.checkNodeChildsParent(x._2))
+  tree.from_hen_collect_leaf_Node_to_ArrayBuffer(tree.hen, tree.leafNodeArrayBuffer)
+  println("-----------------------")
+  tree.hen(generateID("BTC>3^ETH>9^DOGE>10")).setUrl("https://maker.ifttt.com/trigger/scala_event/json/with/key/cyMr3y7V3Np-gzMAhWE8HM")
+  println(tree.hen(generateID("BTC>3^ETH>9^DOGE>10")).url)
+  tree.groupMap =  tree.leafNodeArrayBuffer.groupBy(x => x.expression.takeWhile(_ != '>').takeWhile(_ != '<'))
+  //val groupMap2 = groupMap.map(x => (x._1, x._2.map(_.expression)))
+  //println(groupMap2)
+  println("-----------------------")
+  def updateNodeAcrossEvents(key: String,
+                             values: Iterator[String],
+                             state: GroupState[ATree]): ATree = {
+    //var currenttree = state.getOption.getOrElse(new ATree("1"))
+    //get hen count
+    var currentTree = state.getOption.getOrElse(new ATree("1"))
+    //var currentCount = state.getOption.map(t => t).getOrElse(tree)
+    //var currentCount = state.getOption.map(t).getOrElse(0)
+    //var currentNode = groupMap
+                              
+    values.foreach(x => if (x.split(":").head == "BTC") {
+      tree.groupMap("BTC").foreach(x => x.receiveResult(true))
+    } else if (x.split(":").head == "ETH") {
+      tree.groupMap("ETH").foreach(x => x.receiveResult(true))
+    } else if (x.split(":").head == "DOGE") {
+      tree.groupMap("DOGE").foreach(x => x.receiveResult(true))
+    } else if (x.split(":").head == "SOL") {
+      tree.groupMap("SOL").foreach(x => x.receiveResult(true))
+    })
+    val updatedTree = tree
+    state.update(tree)
+    tree
+  }
+
 
     val spark = SparkSession.builder()
       .appName("NodeMapGroupsWithStateExample")
@@ -80,30 +77,27 @@ object MapGroupWithStateNode {
      val lines: Dataset[String] = spark.readStream
       .format("socket")
       .option("host", "localhost")
-      .option("port", "9999")
+      .option("port", "9998")
       .load()
       .as[String]
-      
+    //implicit val nodeEncoder: Encoder[Node] = Encoders.product[Node]
     import spark.implicits._
-      val nodeCounts = lines.groupByKey(values => values)
-        .mapGroupsWithState[MyNode,Array[MyNode]](GroupStateTimeout.NoTimeout())(updateNodeAcrossEvents _)
-
-    nodeCounts.writeStream
+    // val word = lines.select(split('value, " ").as("word"))
+    val atree = lines.groupByKey(values => values)
+        .mapGroupsWithState[ATree,ATree](GroupStateTimeout.NoTimeout())(updateNodeAcrossEvents _)
+   
+    // word.select(col("word")).writeStream
+    //   .outputMode("update")
+    //   .format("console")
+    //   .start()
+    // //   .awaitTermination()
+    atree.writeStream
       .outputMode("update")
       .format("console")
       .start()
       .awaitTermination()
+  
 
   }
-
-
-
-
-
-
-
-
-
-
 }
 
