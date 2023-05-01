@@ -5,20 +5,84 @@ import scala.collection.mutable.ArrayBuffer
 import scala.util.matching.Regex
 import org.apache.hadoop.yarn.webapp.hamlet.HamletSpec.P
 import scalaj.http._
-abstract class  Node extends Product{
+import java.io.Serializable
 
-  val expression: String
-  var parents: ListBuffer[Node]
-  var childs: ListBuffer[Node]
-  var useCount: Int
+
+trait Node extends Product with  Serializable{
+
+  val expression: String 
+  var parents: ListBuffer[Node] 
+  var childs: ListBuffer[Node] 
+  var useCount: Int 
   var childExprs: ListBuffer[List[String]]
-  var trueCounter: Int
-  var state: Boolean
-  var url:String
-  def receiveResult(result: Boolean): Unit
-  def setUrl(url:String):Unit
-
+  var trueCounter: Int 
+  var state: Boolean 
+  var url:String 
+  def receiveResult(result: Boolean): Unit 
+  def setUrl(url:String):Unit 
+  //def this() = this("",0L)
 }
+
+// case class Node(_expression: String, var trueCounter: Int) extends Serializable{
+  
+//   val expression: String = _expression
+//   var parents: ListBuffer[Node] = ListBuffer[Node]()
+//   var childs: ListBuffer[Node] = ListBuffer[Node]()
+//   var useCount: Int = 0
+//   var childExprs: ListBuffer[List[String]] = ListBuffer[List[String]]()
+//   var state: Boolean = false
+//   //var trueCounter = 0
+//   var url:String = ""
+
+//   def setUrl(_url:String):Unit = {
+//     url = _url
+//   }
+
+//   def receiveResult(result: Boolean): Unit = {
+//     println(expression + "receive result: " + result)
+    
+//     if (result == true) {
+//       trueCounter += 1
+//     } else if (result == false && trueCounter > 0) {
+//       trueCounter -= 1
+//     } else {
+//       trueCounter -= 0
+//     }
+//     var newState = false
+//     if (trueCounter != childs.size) {
+//       newState = false
+//     } else {
+//       newState = true
+      
+//       //trueCounter = 0
+//     }
+
+//     if (state != newState) {
+//       state = newState
+//       propagateResult(newState)
+//       if (state == true) {
+//         sendNotification()
+//       }
+//     } else {}
+//     println(expression + "count " + trueCounter)
+//   }
+//   def sendNotification(): Unit = {
+//     if (url != "" ) {
+//       val testRequest = Http(url).asString.body
+//       println("Notification sent <- from" + expression)
+//     }
+//   }
+
+
+
+
+//   def propagateResult(result: Boolean): Unit = {
+//     parents.foreach(_.receiveResult(result))
+    
+//   }
+
+// }
+
 
 case class inner_Node(_expression: String, var trueCounter:Int) extends Node{
   val expression: String = _expression
@@ -89,9 +153,9 @@ case class leaf_Node(_expression: String) extends Node {
   var url:String = ""
   def receiveResult(result: Boolean): Unit = {
     if (this.isInstanceOf[leaf_Node]) {
-      this.state = result
+      state = result
       propagateResult(result)
-      println(expression + "receive result: " + result)
+      //println(expression + "receive result: " + result)
     }
   }
 
@@ -103,7 +167,7 @@ case class leaf_Node(_expression: String) extends Node {
 
 }
 
-case class ATree(name:String) {
+case class ATree(name:String) extends Serializable{
 
   var hen: HashMap[Long, Node] = HashMap[Long, Node]()
   var root: ListBuffer[Node] = ListBuffer[Node]()
@@ -353,7 +417,7 @@ case class ATree(name:String) {
   }
 
   def from_hen_collect_leaf_Node_to_ArrayBuffer(target: HashMap[Long,Node], con: ArrayBuffer[Node]):Unit = {
-    target.foreach(x => if (x._2.isInstanceOf[leaf_Node]) leafNodeArrayBuffer += x._2)
+    target.foreach(x => if (!x._2.expression.contains('^')) leafNodeArrayBuffer += x._2)
   }
 
 
@@ -388,18 +452,19 @@ object Nodes extends  App{
   println("-----------------------")
   // tree.hen.foreach(x => println(x._1))
   // tree.hen.foreach(x => println(x._2.expression))
-  println( s"Node BTC>3^ETH>9^DOGE>10's parents: ${tree.hen(generateID("BTC>3^ETH>9^DOGE>10")).parents.map(_.expression)}")
-  println( s"Node BTC>3^ETH>9^DOGE>10's childs: ${tree.hen(generateID("BTC>3^ETH>9^DOGE>10")).childs.map(_.expression)}")
-  println( s"Node BTC>3^ETH>9^SOL>20's parents: ${tree.hen(generateID("BTC>3^ETH>9^DOGE>10")).parents.map(_.expression)}")
-  println( s"Node BTC>3^ETH>9^SOL>20's childs: ${tree.hen(generateID("BTC>3^ETH>9^DOGE>10")).childs.map(_.expression)}")
-  println( s"Node BTC>3^ETH>9's parents: ${tree.hen(generateID("BTC>3^ETH>9")).parents.map(_.expression)}")
-  println( s"Node BTC>3^ETH>9's parents: ${tree.hen(generateID("BTC>3^ETH>9")).parents.size}")
-  println( s"Node BTC>3^ETH>9's childs: ${tree.hen(generateID("BTC>3^ETH>9")).childs.map(_.expression)}")
-  
+  // println( s"Node BTC>3^ETH>9^DOGE>10's parents: ${tree.hen(generateID("BTC>3^ETH>9^DOGE>10")).parents.map(_.expression)}")
+  // println( s"Node BTC>3^ETH>9^DOGE>10's childs: ${tree.hen(generateID("BTC>3^ETH>9^DOGE>10")).childs.map(_.expression)}")
+  // println( s"Node BTC>3^ETH>9^SOL>20's parents: ${tree.hen(generateID("BTC>3^ETH>9^DOGE>10")).parents.map(_.expression)}")
+  // println( s"Node BTC>3^ETH>9^SOL>20's childs: ${tree.hen(generateID("BTC>3^ETH>9^DOGE>10")).childs.map(_.expression)}")
+  // println( s"Node BTC>3^ETH>9's parents: ${tree.hen(generateID("BTC>3^ETH>9")).parents.map(_.expression)}")
+  // println( s"Node BTC>3^ETH>9's parents: ${tree.hen(generateID("BTC>3^ETH>9")).parents.size}")
+  // println( s"Node BTC>3^ETH>9's childs: ${tree.hen(generateID("BTC>3^ETH>9")).childs.map(_.expression)}")
+  tree.hen(generateID("BTC>3^ETH>9^DOGE>10")).setUrl("https://maker.ifttt.com/trigger/scala_event/json/with/key/cyMr3y7V3Np-gzMAhWE8HM")
   println("\n")
   println(s"Node(BTC>3) receive result: true")
   tree.hen(generateID("BTC>3")).receiveResult(true)
   println(tree.hen(generateID("BTC>3")).state)
+  println(tree.hen(generateID("BTC>3")).getClass())
   println("\n")
   println(s"After Node(BTC>3) receive result: true then let's check Node(BTC>3^ETH>9) 's state")
   println(tree.hen(generateID("BTC>3^ETH>9")).state)

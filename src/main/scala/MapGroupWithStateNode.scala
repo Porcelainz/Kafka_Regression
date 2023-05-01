@@ -12,12 +12,13 @@ import scala.collection.mutable.ArrayBuffer
 import org.apache.spark.sql.catalyst.expressions.Encode
 import scala.collection.mutable.HashMap
 
+
+
+
+
+
 object MapGroupWithStateNode {
 
-  
-  
-
-  def main(args: Array[String]): Unit = {
 
     def generateID(_expression: String): Long = {
     val predicatesAndOperators: List[Char] = _expression.toList
@@ -41,6 +42,7 @@ object MapGroupWithStateNode {
   //val groupMap2 = groupMap.map(x => (x._1, x._2.map(_.expression)))
   //println(groupMap2)
   println("-----------------------")
+    
   def updateNodeAcrossEvents(key: String,
                              values: Iterator[String],
                              state: GroupState[ATree]): ATree = {
@@ -66,8 +68,43 @@ object MapGroupWithStateNode {
   }
 
 
+
+  def updateNodeAcrossEvents_Node(key: String,
+                             values: Iterator[String],
+                             state: GroupState[Node]): Array[Node] = {
+    //var currenttree = state.getOption.getOrElse(new ATree("1"))
+    //get hen count
+    var currentCount = state.getOption.map(_.trueCounter).getOrElse(0)
+    //var currentTree = state.getOption.getOrElse(new ATree("1"))
+    //var currentCount = state.getOption.map(t => t).getOrElse(tree)
+    //var currentCount = state.getOption.map(t).getOrElse(0)
+    //var currentNode = groupMap
+                              
+    values.foreach(x => if (x.split(":").head == "BTC") {
+      tree.groupMap("BTC").foreach(x => x.receiveResult(true))
+    } else if (x.split(":").head == "ETH") {
+      tree.groupMap("ETH").foreach(x => x.receiveResult(true))
+    } else if (x.split(":").head == "DOGE") {
+      tree.groupMap("DOGE").foreach(x => x.receiveResult(true))
+    } else if (x.split(":").head == "SOL") {
+      tree.groupMap("SOL").foreach(x => x.receiveResult(true))
+    })
+    //val updatedTree = tree
+    //state.update(tree)
+    val updateNode = tree.hen.values.toArray
+    updateNode
+  }
+
+
+
+
+
+
+  
+  def main(args: Array[String]): Unit = {
+  
     val spark = SparkSession.builder()
-      .appName("NodeMapGroupsWithStateExample")
+      .appName("NodeMapGroupsWithStateTreeExample")
       .master("local[*]")
       .getOrCreate()
       spark.sparkContext.setLogLevel("ERROR")
@@ -84,7 +121,11 @@ object MapGroupWithStateNode {
     import spark.implicits._
     // val word = lines.select(split('value, " ").as("word"))
     val atree = lines.groupByKey(values => values)
-        .mapGroupsWithState[ATree,ATree](GroupStateTimeout.NoTimeout())(updateNodeAcrossEvents _)
+        .mapGroupsWithState[ATree,ATree](GroupStateTimeout.NoTimeout())(updateNodeAcrossEvents _)  
+
+
+    //  val atree = lines.groupByKey(values => values)
+    //     .mapGroupsWithState[Node,Array[Node]](GroupStateTimeout.NoTimeout())(updateNodeAcrossEvents_Node _).flatMap(x => x)
    
     // word.select(col("word")).writeStream
     //   .outputMode("update")

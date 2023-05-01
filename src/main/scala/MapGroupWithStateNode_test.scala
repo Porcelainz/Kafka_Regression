@@ -50,13 +50,13 @@ case class MyNode(_name:String, var count:Int) extends Serializable{
       val testRequest = Http(url).asString.body
       println("Notification sent <- from" + this.name)
       println(count)
-      count = 0
+      //count = 0
     }
   }
 
   def changeResult(result: Boolean): Unit = {
     this.result = result
-    
+    if(result) {count +=1 } else {count -=1}
     propagate(result, this.name)
   }
 
@@ -96,13 +96,17 @@ object MapGroupWithStateNode_test {
       } else {
         node5.changeResult(false)
       }
-    }      )          
-
-    val updatedNodeCount = Array(node1, node2, node3, node4, node5)
+      
+    }   
+    
+    )          
+    println("node1.count " + node1.count)
+    val updatedNodeCount = Array( node2, node3, node4, node5)
     // updatedNodeCount.foreach(x => println(x.name + " " + x.count))
     // updatedNodeCount.foreach(x => state.update(x))
     // state.update(currentNode)
     // state.update(node3)
+    //println(node1.count)
     //but it seems if i did not update the state, the state will  be updated too (?       
     updatedNodeCount
   }
@@ -120,10 +124,10 @@ object MapGroupWithStateNode_test {
      val lines: Dataset[String] = spark.readStream
       .format("socket")
       .option("host", "localhost")
-      .option("port", "9999")
+      .option("port", "9998")
       .load()
       .as[String]
-      
+    
     import spark.implicits._
       val nodeCounts = lines.groupByKey(values => values)
         .mapGroupsWithState[MyNode,Array[MyNode]](GroupStateTimeout.NoTimeout())(updateNodeAcrossEvents _).flatMap(x => x)
