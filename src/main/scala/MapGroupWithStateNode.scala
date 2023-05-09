@@ -30,7 +30,7 @@ object MapGroupWithStateNode {
     id
   }
 
-  val tree = new ATree("1")
+  val tree = new ATree("My ATree")
   tree.insert("BTC>3^ETH>9^DOGE>10")
   tree.insert("BTC>3^ETH>9^SOL>20")
   tree.hen.foreach(x => tree.checkNodeChildsParent(x._2))
@@ -46,12 +46,9 @@ object MapGroupWithStateNode {
   def updateNodeAcrossEvents(key: String,
                              values: Iterator[String],
                              state: GroupState[ATree]): ATree = {
-    //var currenttree = state.getOption.getOrElse(new ATree("1"))
-    //get hen count
+    
     var currentTree = state.getOption.getOrElse(new ATree("1"))
-    //var currentCount = state.getOption.map(t => t).getOrElse(tree)
-    //var currentCount = state.getOption.map(t).getOrElse(0)
-    //var currentNode = groupMap
+    
                               
     values.foreach(x => if (x.split(":").head == "BTC") {
       tree.groupMap("BTC").foreach(x => x.receiveResult(true))
@@ -69,31 +66,27 @@ object MapGroupWithStateNode {
 
 
 
-  def updateNodeAcrossEvents_Node(key: String,
-                             values: Iterator[String],
-                             state: GroupState[Node]): Array[Node] = {
-    //var currenttree = state.getOption.getOrElse(new ATree("1"))
-    //get hen count
-    var currentCount = state.getOption.map(_.trueCounter).getOrElse(0)
-    //var currentTree = state.getOption.getOrElse(new ATree("1"))
-    //var currentCount = state.getOption.map(t => t).getOrElse(tree)
-    //var currentCount = state.getOption.map(t).getOrElse(0)
-    //var currentNode = groupMap
+  // def updateNodeAcrossEvents_Node(key: String,
+  //                            values: Iterator[String],
+  //                            state: GroupState[Node]): Array[Node] = {
+    
+  //   var currentCount = state.getOption.map(_.trueCounter).getOrElse(0)
+   
                               
-    values.foreach(x => if (x.split(":").head == "BTC") {
-      tree.groupMap("BTC").foreach(x => x.receiveResult(true))
-    } else if (x.split(":").head == "ETH") {
-      tree.groupMap("ETH").foreach(x => x.receiveResult(true))
-    } else if (x.split(":").head == "DOGE") {
-      tree.groupMap("DOGE").foreach(x => x.receiveResult(true))
-    } else if (x.split(":").head == "SOL") {
-      tree.groupMap("SOL").foreach(x => x.receiveResult(true))
-    })
-    //val updatedTree = tree
-    //state.update(tree)
-    val updateNode = tree.hen.values.toArray
-    updateNode
-  }
+  //   values.foreach(x => if (x.split(":").head == "BTC") {
+  //     tree.groupMap("BTC").foreach(x => x.receiveResult(true))
+  //   } else if (x.split(":").head == "ETH") {
+  //     tree.groupMap("ETH").foreach(x => x.receiveResult(true))
+  //   } else if (x.split(":").head == "DOGE") {
+  //     tree.groupMap("DOGE").foreach(x => x.receiveResult(true))
+  //   } else if (x.split(":").head == "SOL") {
+  //     tree.groupMap("SOL").foreach(x => x.receiveResult(true))
+  //   })
+  //   //val updatedTree = tree
+  //   //state.update(tree)
+  //   val updateNode = tree.hen.values.toArray
+  //   updateNode
+  // }
 
 
 
@@ -124,14 +117,7 @@ object MapGroupWithStateNode {
         .mapGroupsWithState[ATree,ATree](GroupStateTimeout.NoTimeout())(updateNodeAcrossEvents _)  
 
 
-    //  val atree = lines.groupByKey(values => values)
-    //     .mapGroupsWithState[Node,Array[Node]](GroupStateTimeout.NoTimeout())(updateNodeAcrossEvents_Node _).flatMap(x => x)
    
-    // word.select(col("word")).writeStream
-    //   .outputMode("update")
-    //   .format("console")
-    //   .start()
-    // //   .awaitTermination()
     atree.writeStream
       .outputMode("update")
       .format("console")
