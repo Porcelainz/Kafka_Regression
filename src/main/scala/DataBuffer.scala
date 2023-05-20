@@ -41,7 +41,7 @@ object DataBuffer {
           counter += 1
         }
         if (counter == 5) {
-          producer.send(new ProducerRecord[String,String]("temp-topic", dataBuffer.toString()))
+          producer.send(new ProducerRecord[String,String]("BTC-Value", dataBuffer.toString()))
           dataBuffer.clear()
           counter = 0
           //producer.flush()

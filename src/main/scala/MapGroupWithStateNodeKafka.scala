@@ -17,7 +17,7 @@ import scala.collection.mutable.HashMap
 
 
 
-object MapGroupWithStateNode {
+object MapGroupWithStateNodeKafka {
 
 
     def generateID(_expression: String): Long = {
@@ -39,7 +39,7 @@ object MapGroupWithStateNode {
   println("-----------------------")
   tree.hen(generateID("BTC>3^ETH>9^DOGE>10")).setUrl("https://maker.ifttt.com/trigger/scala_event/with/key/cyMr3y7V3Np-gzMAhWE8HM")
   tree.hen(generateID("BTC>3^ETH>9^SOL>20")).setUrl("https://maker.ifttt.com/trigger/scala_event/with/key/cyMr3y7V3Np-gzMAhWE8HM")
-  tree.hen(generateID("BTC.Slope>3^ETH>9^SOL>20")).setUrl("https://maker.ifttt.com/trigger/Slope_Event/json/with/key/cyMr3y7V3Np-gzMAhWE8HM")
+  tree.hen(generateID("BTC.Slope>3^ETH>9^SOL>20")).setUrl("https://maker.ifttt.com/trigger/Slope_Event/with/key/cyMr3y7V3Np-gzMAhWE8HM")
   println(tree.hen(generateID("BTC>3^ETH>9^DOGE>10")).url)
   tree.groupBySource_Map =  tree.leafNodeArrayBuffer.groupBy(x => x.expression.takeWhile(_ != '>').takeWhile(_ != '<'))
   tree.groupBySource_Map.map(x => tree.create_Switch_Node_from_groupbySource_Map(x._1, x._2.toArray))
@@ -54,72 +54,40 @@ object MapGroupWithStateNode {
     var currentTree = state.getOption.getOrElse(new ATree("1"))
     
                               
-    // values.foreach(x => if (x.split(":").head == "BTC") {
-    //   tree.groupBySource_Map("BTC").foreach(x => x.receiveResult(true))
-    // } else if (x.split(":").head == "ETH") {
-    //   tree.groupBySource_Map("ETH").foreach(x => x.receiveResult(true))
-    // } else if (x.split(":").head == "DOGE") {
-    //   tree.groupBySource_Map("DOGE").foreach(x => x.receiveResult(true))
-    // } else if (x.split(":").head == "SOL") {
-    //   tree.groupBySource_Map("SOL").foreach(x => x.receiveResult(true))
-    // })
+   
     values.foreach( x => tree.switch_Node_Map(x.split(":").head).receiveValueThenForward(x.split(":").last.toDouble))
     val updatedTree = tree
     state.update(tree)
     tree
   }
 
-
-
-  // def updateNodeAcrossEvents_Node(key: String,
-  //                            values: Iterator[String],
-  //                            state: GroupState[Node]): Array[Node] = {
-    
-  //   var currentCount = state.getOption.map(_.trueCounter).getOrElse(0)
-   
-                              
-  //   values.foreach(x => if (x.split(":").head == "BTC") {
-  //     tree.groupMap("BTC").foreach(x => x.receiveResult(true))
-  //   } else if (x.split(":").head == "ETH") {
-  //     tree.groupMap("ETH").foreach(x => x.receiveResult(true))
-  //   } else if (x.split(":").head == "DOGE") {
-  //     tree.groupMap("DOGE").foreach(x => x.receiveResult(true))
-  //   } else if (x.split(":").head == "SOL") {
-  //     tree.groupMap("SOL").foreach(x => x.receiveResult(true))
-  //   })
-  //   //val updatedTree = tree
-  //   //state.update(tree)
-  //   val updateNode = tree.hen.values.toArray
-  //   updateNode
-  // }
-
-
-
-
-
-
   
   def main(args: Array[String]): Unit = {
-  
+    println("30000000")
     val spark = SparkSession.builder()
       .appName("NodeMapGroupsWithStateTreeExample")
       .master("local[*]")
       .getOrCreate()
       spark.sparkContext.setLogLevel("ERROR")
-    //val sqlContext = new SQLContext(spark.sparkContext)
-     import spark.implicits._
     
+    //import spark.implicits._
+    val kafkaParams = Map[String, String](
+      "kafka.bootstrap.servers" -> "localhost:9092",
+      "subscribePattern" -> "^MyTest-.+" // Pattern to match topics with names starting with "topic-" followed by a digit
+      )
 
-     val lines = spark.readStream
-      .format("socket")
-      .option("host", "localhost")
-      .option("port", "9998")
-      .load()
-      .as[String]
-    //implicit val nodeEncoder: Encoder[Node] = Encoders.product[Node]
     import spark.implicits._
-    // val word = lines.select(split('value, " ").as("word"))
-    val atree = lines.groupByKey(values => values)
+     val lines = spark.readStream
+      .format("kafka")
+      .options(kafkaParams)
+      .load()
+      .selectExpr("CAST(value AS STRING) AS value")
+      .as[String]
+    
+    //import spark.implicits._
+   
+    val atree = lines
+        .groupByKey(values => values)
         .mapGroupsWithState[ATree,ATree](GroupStateTimeout.NoTimeout())(updateNodeAcrossEvents _)  
 
 

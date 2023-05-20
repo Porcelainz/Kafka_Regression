@@ -8,7 +8,7 @@ import java.util
 import scala.io.StdIn
 object DataBuffer1 {
   def main(args: Array[String]): Unit = {
-    consumeFromKafka("Test")
+    consumeFromKafka("BTC-Value")
   }
   def consumeFromKafka(topic: String): Unit = {
     // val props_forConsumer = new Properties()
@@ -50,7 +50,7 @@ object DataBuffer1 {
       }
 
       if (counter == 5) {
-        producer.send(new ProducerRecord[String,String]("temp-topic", dataBuffer.toString()))
+        producer.send(new ProducerRecord[String,String]("BTC-Value", dataBuffer.toString()))
         dataBuffer.clear()
         counter = 0
         producer.flush()

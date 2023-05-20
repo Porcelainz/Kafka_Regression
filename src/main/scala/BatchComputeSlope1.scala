@@ -37,7 +37,7 @@ object BatchComputeSlope1 {
     val streamingData = spark.readStream
       .format("kafka")
       .option("kafka.bootstrap.servers", "localhost:9092")
-      .option("subscribe", "temp-topic")
+      .option("subscribe", "BTC-Value")
       .load()
 
     val df1 = streamingData.selectExpr("CAST(value AS STRING)") // ,"timestamp")
@@ -73,15 +73,17 @@ object BatchComputeSlope1 {
             .setFeaturesCol("features")
             .setLabelCol("temp")
           val lr_model = lr.fit(vecTrainDF)
-          val slope = Seq(lr_model.coefficients(0))
-          val output = slope.toDF()
+          val slope = lr_model.coefficients(0)
+          val round_slope = BigDecimal(slope).setScale(5, BigDecimal.RoundingMode.HALF_UP).toDouble
+          val data_slope = Seq("BTC.Slope:" + round_slope)
+          val output = data_slope.toDF()
           // output.write.format("csv").save("slope/batch_slope")
           output
             .selectExpr("CAST(value AS STRING)")
             .write
             .format("kafka")
             .option("kafka.bootstrap.servers", "localhost:9092")
-            .option("topic", "Test")
+            .option("topic", "MyTest-BTC.Slope")
             .save()
 
         }
