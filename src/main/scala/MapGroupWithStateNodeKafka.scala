@@ -30,7 +30,7 @@ object MapGroupWithStateNodeKafka {
     id
   }
 
-  val tree = new ATree("My ATree")
+  val tree = new ATree("you ATree")
   tree.insert("BTC>3^ETH>9^DOGE>10")
   tree.insert("BTC>3^ETH>9^SOL>20")
   tree.insert("BTC.Slope>3^ETH>9^SOL>20")
