@@ -46,7 +46,7 @@ object MapGroupWithStateNodeKafka {
   println(tree.groupBySource_Map)
   //val groupMap2 = groupMap.map(x => (x._1, x._2.map(_.expression)))
   //println(groupMap2)
-  println("-----------------------")
+  println("-----------1111111111111111111------------")
   
   def updateNodeAcrossEvents(key: String,
                              values: Iterator[String],

@@ -261,6 +261,14 @@ case class Inner_Node(val expression: String, var trueCounter: Int)
         comed_Node_Buffer -= comesFrom
         //removeFromTimeBuffer(comesFrom)
         new_state = check_state()
+        if (state == true && new_state == false) {
+          if (url != "") {
+            println(
+              "state turn from TRUE TO FALSE" + " False trigger true action send http request to" + url
+            )
+          }
+        }
+        
         state = new_state
         propagateResult(state, value)
       } else if (comes_state == false && comed_Node_Buffer.contains(comesFrom) == false) {
@@ -268,6 +276,13 @@ case class Inner_Node(val expression: String, var trueCounter: Int)
         //comed_Node_Buffer += comesFrom
         //comed_Node_Buffer_With_Time += ((comesFrom, System.currentTimeMillis()))
         new_state = false
+        if (state == true && new_state == false) {
+          if (url != "") {
+            println(
+              "state turn from TRUE TO FALSE" + " False trigger true action send http request to" + url
+            )
+          }
+        }
         state = new_state
         propagateResult(state, value)
       } 
