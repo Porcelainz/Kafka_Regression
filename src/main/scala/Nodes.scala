@@ -6,6 +6,9 @@ import scala.util.matching.Regex
 import org.apache.hadoop.yarn.webapp.hamlet.HamletSpec.P
 import scalaj.http._
 import java.io.Serializable
+import breeze.numerics.exp
+import os.remove
+import spire.std.array
 
 trait Node extends Product with Serializable {
 
@@ -166,16 +169,13 @@ case class Inner_Node(val expression: String, var trueCounter: Int)
   var current_value: Map[String, String] = Map.empty
 
   var comed_Node_Buffer = ListBuffer[Node]()
+  //var comed_Node_Buffer_With_Time = ListBuffer[(Node, Long)]()
   def setUrl(url: String): Unit = {
     this.url = url
   }
 
-  def receiveResult(
-      comes_state: Boolean,
-      value: String,
-      comesFrom: Node
-  ): Unit = {
-
+  def receiveResult(comes_state: Boolean,value: String,comesFrom: Node): Unit = {
+    println(expression +" Receive result " + comes_state + " from " + comesFrom.expression)
     def check_state(): Boolean = {
       if (comed_Node_Buffer.size == childs.size) {
         true
@@ -183,37 +183,102 @@ case class Inner_Node(val expression: String, var trueCounter: Int)
         false
       }
     }
+    // def check_state_Seq(): Boolean = {
+    //   if (comed_Node_Buffer.size == childs.size) {
+    //     val isOrdered: Boolean = comed_Node_Buffer_With_Time.zip(comed_Node_Buffer_With_Time.tail)
+    //     .forall { case ((_, time1), (_, time2)) => time1 < time2 }
+    //     isOrdered
+    //   } else {
+    //     false
+    //   }
+      
+      
+    // }
+    // def removeFromTimeBuffer(target_node: Node): Unit = {
+    //     val indexToRemove: Int = comed_Node_Buffer_With_Time.indexWhere { case (node, _) => node == target_node }
+    //     comed_Node_Buffer_With_Time.remove(indexToRemove)
+    //   }
     var new_state = false
-    if (comes_state == true && comed_Node_Buffer.contains(comesFrom) == false) {
-      comed_Node_Buffer += comesFrom
-      new_state = check_state()
-      if (new_state) {
-        if (url != "") {
-          // sendNotification()
-          println("True trigger true action send http request to" + url)
+    // if (expression.contains("Seq")) {
+    //   if (comes_state == true && comed_Node_Buffer.contains(comesFrom) == false) {
+    //     comed_Node_Buffer += comesFrom
+    //     comed_Node_Buffer_With_Time += ((comesFrom, System.currentTimeMillis()))
+    //     new_state = check_state_Seq()
+    //     if (new_state) {
+    //       if (url != "") {
+    //         // sendNotification()
+    //         println("True trigger true action send http request to" + url)
+    //       }
+    //       state = new_state
+    //       comed_Node_Buffer.clear()
+    //       // println("True trigger true action send http request to"+ url)
+    //     } else if (state == true && new_state == false) {
+    //       if (url != "") {
+    //         println(
+    //           "state turn from TRUE TO FALSE" + " False trigger true action send http request to" + url
+    //         )
+    //       }
+    //       state = new_state
+    //     }
+    //   } else if (comes_state == false && comed_Node_Buffer.contains(comesFrom) == true) {
+    //     comed_Node_Buffer -= comesFrom
+    //     removeFromTimeBuffer(comesFrom)
+    //     new_state = check_state()
+    //     state = new_state
+    //   }
+    //   //state = new_state
+      
+    //   if (!parents.isEmpty) {
+    //     propagateResult(state, value)
+    //   }
+    //}
+     //else {
+      if (comes_state == true && comed_Node_Buffer.contains(comesFrom) == false) {
+        println("Into 1")
+        comed_Node_Buffer += comesFrom
+        //comed_Node_Buffer_With_Time += ((comesFrom, System.currentTimeMillis()))
+        new_state = check_state()
+        if (new_state) {
+          if (url != "") {
+            // sendNotification()
+            println("True trigger true action send http request to" + url)
+          }
+          state = new_state
+          propagateResult(state, value)
+          comed_Node_Buffer.clear()
+          // println("True trigger true action send http request to"+ url)
+        } else if (state == true && new_state == false) {
+          if (url != "") {
+            println(
+              "state turn from TRUE TO FALSE" + " False trigger true action send http request to" + url
+            )
+          }
+          state = new_state
+          propagateResult(state, value)
         }
+      } else if (comes_state == false && comed_Node_Buffer.contains(comesFrom) == true) {
+        println("Into 2")
+        comed_Node_Buffer -= comesFrom
+        //removeFromTimeBuffer(comesFrom)
+        new_state = check_state()
         state = new_state
-        comed_Node_Buffer.clear()
-        // println("True trigger true action send http request to"+ url)
-      } else if (state == true && new_state == false) {
-        if (url != "") {
-          println(
-            "state turn from TRUE TO FALSE" + " False trigger true action send http request to" + url
-          )
-        }
+        propagateResult(state, value)
+      } else if (comes_state == false && comed_Node_Buffer.contains(comesFrom) == false) {
+        println("Into 3")
+        //comed_Node_Buffer += comesFrom
+        //comed_Node_Buffer_With_Time += ((comesFrom, System.currentTimeMillis()))
+        new_state = false
         state = new_state
-      }
-    } else if (comes_state == false && comed_Node_Buffer.contains(comesFrom) == true) {
-      comed_Node_Buffer -= comesFrom
-      new_state = check_state()
-      state = new_state
-    }
-    //state = new_state
+        propagateResult(state, value)
+      } 
+      
+      //state = new_state
+      
+      
+        
+      
+    //}
     
-    if (!parents.isEmpty) {
-      propagateResult(state, value)
-    }
-
     // if (new_state) {
     //   if (url != "") {
     //     //sendNotification()
@@ -277,10 +342,65 @@ case class Inner_Node(val expression: String, var trueCounter: Int)
   }
 
   def propagateResult(state_for_propagate: Boolean, value: String): Unit = {
-    parents.foreach(_.receiveResult(state_for_propagate, value, this))
+    if (!parents.isEmpty) {
+     
+    
+      parents.foreach(_.receiveResult(state_for_propagate, value, this))
+      val pattern: Regex = "Seq\\((.*?)\\)".r
+      parents.foreach(x => x.expression match {
+        case pattern(parent_expression) => x.receiveResult(check_state_Seq(expression, comed_Node_Buffer), value, this)
+        case _: String => x.receiveResult(state_for_propagate, value, this)
+      })
+    }
     // if (state == true) {
     //   state = false
     // }
+
+    def check_state_Seq(self_expr:String, target_expr:ListBuffer[Node]): Boolean = {
+      
+      def check_Array_Order(arr1: Array[String], arr2: Array[String]):Boolean = {
+      if (arr1.length != arr2.length) {
+        false
+      } else {
+        var i = 0
+        while (i < arr1.length) {
+          if (arr1(i) != arr2(i)) {
+            return false
+          }
+          i += 1
+        }
+        true
+      }
+    }
+      // println("CHECK STATE SEQ!!!!!!!!!!!!!")
+      // println(comed_Node_Buffer.size)
+      // println(childs.size)
+      if (comed_Node_Buffer.size == childs.size) {
+        //println("CHECK STATE SEQ!!!!!!!!!!!!!")
+        // val pattern: Regex = "Seq\\((.*?)\\)".r
+        val expr1 = self_expr.split('^')
+        var expr2 = ArrayBuffer[String]()
+        for(node <- target_expr) {
+          expr2 += node.expression
+        }
+        println(expr1.mkString(","))
+        println(expr2.mkString(","))
+        // println(expr1 == expr2.toArray)
+        check_Array_Order(expr1, expr2.toArray)
+        
+        //println(expr1 == expr2)
+        // val isOrdered: Boolean = comed_Node_Buffer_With_Time.zip(comed_Node_Buffer_With_Time.tail)
+        // .forall { case ((_, time1), (_, time2)) => time1 < time2 }
+        // isOrdered
+      } else {
+        println("here ?")
+        false
+      }
+      
+      
+      
+    }
+    
 
   }
 
@@ -297,16 +417,10 @@ case class Leaf_Node(val expression: String) extends Node {
   var url: String = ""
 
   // var value:String = ""
-  def receiveResult(
-      new_state: Boolean,
-      value: String,
-      sendsFrom: Node = new Leaf_Node("0")
-  ): Unit = {
+  def receiveResult(new_state: Boolean,value: String,sendsFrom: Node = new Leaf_Node("0")): Unit = {
     // println(expression + " receive result: " + new_state)
 
-    println(
-      expression + " receive result: " + new_state + " with value: " + value
-    )
+    println(expression + " receive result: " + new_state + " with value: " + value)
     state = new_state
     propagateResult(new_state, value)
 
@@ -431,7 +545,7 @@ case class ATree(name: String) extends Serializable {
 
   private def createNewNode(expr: String, childNodes: List[Node]): Node = {
     val id = generateID(expr)
-    val node = if (!expr.contains('^')) {
+    val node = if (!expr.contains('^') && !expr.contains("Seq")) {
       new Leaf_Node(expr)
     } else {
       new Inner_Node(expr, 0)
@@ -625,7 +739,8 @@ case class ATree(name: String) extends Serializable {
       con: ArrayBuffer[Node]
   ): Unit = {
     target.foreach(x =>
-      if (!x._2.expression.contains('^')) leafNodeArrayBuffer += x._2
+      // if (!x._2.expression.contains('^') && !x._2.expression.contains("Seq")) leafNodeArrayBuffer += x._2
+      if (x._2.isInstanceOf[Leaf_Node]) con += x._2
     )
   }
 
@@ -663,36 +778,61 @@ object Nodes extends App {
   val tree = new ATree("1")
   // tree.insert("BTC>3^ETH>9^DOGE>10")
   // tree.insert("BTC>3^ETH>9^SOL>20")
-  // tree.insert("Seq(A>3,B<2,C>3)^ETH>9")
+  // tree.insert("Seq(Apple>3,Bean<2,Car>3)^ETH>9")
+  tree.insert("Seq(A>3,B<2,C>3)")
+  tree.insert("Seq(A>3,B<2,C>3)^ETH>9")
+  tree.insert("A>3^B<2^C>3^SOL>20")
   // tree.insert("A>3^B<2^C>3^SOL>20")
-  tree.insert("BTC>3^ETH>9^DOGE>10")
-  tree.insert("BTC>3^ETH>9^SOL>20")
-  tree.insert("BTC.Slope>3^ETH>9^SOL>20")
+  // tree.insert("BTC>3^ETH>9^DOGE>10")
+  // tree.insert("BTC>3^ETH>9^SOL>20")
+  // tree.insert("BTC.Slope>3^ETH>9^SOL>20")
   tree.hen.foreach(x => tree.checkNodeChildsParent(x._2))
   tree.from_hen_collect_leaf_Node_to_ArrayBuffer(
     tree.hen,
     tree.leafNodeArrayBuffer
   )
-  println("-----------------------")
+  println("------------4444444444444444443-----------")
   tree.leafNodeArrayBuffer.foreach(x => println(x.expression))
   val regex = new Regex("([A-Za-z]+)[<>]\\d+")
   val groupMap = tree.leafNodeArrayBuffer.groupBy(x =>
+    
     x.expression.takeWhile(_ != '>').takeWhile(_ != '<')
+    
   )
   val groupMap2 = groupMap.map(x => (x._1, x._2.map(_.expression)))
   println(groupMap2)
   println("-----------------------")
   tree.hen.foreach(x => println(x._1))
   tree.hen.foreach(x => println(x._2.expression))
-  println(
-    s"BTC>3^ETH>9^DOGE>10 childs: ${tree.hen(generateID("BTC>3^ETH>9^DOGE>10")).childs.map(_.expression)}"
-  )
   // println(
-  //   s"Seq(A>3,B<2,C>3)  childs: ${tree.hen(generateID("Seq(A>3,B<2,C>3)")).childs.map(_.expression)}"
+  //   s"Seq(A>3,B<2,C>3): ${tree.hen(generateID("Seq(A>3,B<2,C>3)")).childs.map(_.expression)}"
   // )
-  println(
-    s"BTC>3^ETH>9^SOL>20 childs: ${tree.hen(generateID("BTC>3^ETH>9^SOL>20")).childs.map(_.expression)}"
-  )
+  // // println(
+  // //   s"Seq(A>3,B<2,C>3)  childs: ${tree.hen(generateID("Seq(A>3,B<2,C>3)")).childs.map(_.expression)}"
+  // // )
+  // println(
+  //   s"A>3^B<2^C>3 childs: ${tree.hen(generateID("A>3^B<2^C>3")).childs.map(_.expression)}"
+  // )
+  println("--------------------------------")
+  tree.hen(generateID("A>3")).receiveResult(true,"13", new Leaf_Node("0"))
+  Thread.sleep(500)
+  tree.hen(generateID("B<2")).receiveResult(true,"1",new Leaf_Node("0"))
+  Thread.sleep(500)
+  tree.hen(generateID("C>3")).receiveResult(true,"4", new Leaf_Node("0"))
+  //tree.hen(generateID("B<2")).receiveResult(true,"1",new Leaf_Node("0"))
+  tree.hen(generateID("ETH>9")).receiveResult(true,"1",new Leaf_Node("0"))
+  
+  println("A>3^B<2^C>3 state: " + tree.hen(generateID("A>3^B<2^C>3")).state)
+  println("Seq(A>3,B<2,C>3) state" + tree.hen(generateID("Seq(A>3,B<2,C>3)")).state)
+  println("Seq(A>3,B<2,C>3)^ETH>9 state: " + tree.hen(generateID("Seq(A>3,B<2,C>3)^ETH>9")).state)
+  tree.hen(generateID("SOL>20")).receiveResult(true,"23",new Leaf_Node("0"))
+  println("A>3^B<2^C>3^SOL>20 state: "+ tree.hen(generateID("A>3^B<2^C>3^SOL>20")).state)
+  tree.hen(generateID("A>3")).receiveResult(false,"13", new Leaf_Node("0"))
+  println("A>3^B<2^C>3 state: "+ tree.hen(generateID("A>3^B<2^C>3")).state)
+  println("Seq(A>3,B<2,C>3) state: " + tree.hen(generateID("Seq(A>3,B<2,C>3)")).state)
+  println("Seq(A>3,B<2,C>3)^ETH>9 state: " + tree.hen(generateID("Seq(A>3,B<2,C>3)^ETH>9")).state)
+  println("A>3^B<2^C>3^SOL>20 state:" +tree.hen(generateID("A>3^B<2^C>3^SOL>20")).state)
+
   // println(
   //   s"A^B^C parents: ${tree.hen(generateID("A>3^B<2^C>3")).parents.map(_.expression)}"
   // )

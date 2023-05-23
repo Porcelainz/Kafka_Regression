@@ -43,6 +43,7 @@ object MapGroupWithStateNodeKafka {
   println(tree.hen(generateID("BTC>3^ETH>9^DOGE>10")).url)
   tree.groupBySource_Map =  tree.leafNodeArrayBuffer.groupBy(x => x.expression.takeWhile(_ != '>').takeWhile(_ != '<'))
   tree.groupBySource_Map.map(x => tree.create_Switch_Node_from_groupbySource_Map(x._1, x._2.toArray))
+  println(tree.groupBySource_Map)
   //val groupMap2 = groupMap.map(x => (x._1, x._2.map(_.expression)))
   //println(groupMap2)
   println("-----------------------")
