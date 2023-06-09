@@ -435,7 +435,7 @@ case class Leaf_Node(val expression: String) extends Node {
   def receiveResult(new_state: Boolean,value: String,sendsFrom: Node = new Leaf_Node("0")): Unit = {
     // println(expression + " receive result: " + new_state)
 
-    println(expression + " receive result: " + new_state + " with value: " + value)
+    (expression + " receive result: " + new_state + " with value: " + value)
     state = new_state
     propagateResult(new_state, value)
 
@@ -490,11 +490,21 @@ case class ATree(name: String) extends Serializable {
   var groupBySource_Map: Map[String, ArrayBuffer[Node]] =
     Map[String, ArrayBuffer[Node]]()
   var switch_Node_Map = Map[String, Switch_Node]()
+  var seq_index = 0
+  def add_query(query: String): Unit = {
+    if ( query.contains('∨') ) {
+      query.split('∨').foreach(x => insert(x))
+    } else {
+      insert(query)
+    }
+    
+  }
+
 
   def insert(_expression: String): Node = {
 
-    val id = generateID(_expression)
-    println(_expression + "   " + id)
+    val id = generateID(_expression )
+    //println(_expression + " ID:  " + id )
     if (hen.getOrElse(id, 0) != 0) {
       hen(id).useCount += 1
       hen(id)
@@ -506,13 +516,13 @@ case class ATree(name: String) extends Serializable {
         flag = false
       }
 
-      println("flag: " + flag)
+      //println("flag: " + flag)
       var childNodes: ListBuffer[Node] = ListBuffer[Node]()
 
       if (_expression.length() > 1) {
         if (childExprs.size > 1) {
           for (expr <- childExprs) {
-            println("!!!!!!!!!!!!!!!!!!!expr: " + expr)
+            //println("!!!!!!!!!!!!!!!!!!!expr: " + expr)
             var childNode = insert(expr)
             childNodes += childNode
           }
@@ -577,8 +587,16 @@ case class ATree(name: String) extends Serializable {
   private def generateID(_expression: String): Long = {
     val predicatesAndOperators: List[Char] = _expression.toList
     var id: Int = 0
-    for (char <- predicatesAndOperators) {
+    if (_expression.contains("Seq")) {
+      for (char <- predicatesAndOperators) {
+      id += char.hashCode() * (char.hashCode() + seq_index)
+      
+      } 
+      seq_index += 1
+    } else {
+      for (char <- predicatesAndOperators) {
       id += char.hashCode() * char.hashCode()
+      }
     }
 
     id
@@ -586,27 +604,27 @@ case class ATree(name: String) extends Serializable {
 
   private def reorganize(_expression: String): List[String] = {
 
-    println("Reorganize: " + _expression)
+    //println("Reorganize: " + _expression)
     var u = ListBuffer(List(_expression))
       .map(_.flatMap(_.split("[\\^∨]")).toSet)
       .toSet
 
     var c: ListBuffer[String] = ListBuffer[String]()
     var round = 0
-    println("U :" + u.mkString(", "))
+    //println("U :" + u.mkString(", "))
     breakable {
       while (u.nonEmpty) {
 
         val s = selectAn_S_that_maximizes_insect_in_Hen(u, _expression)
-        println("s: " + s)
+        //println("s: " + s)
         if (s.isEmpty) {
 
           break()
         }
         u = u.map(_.filter(!s.contains(_)))
-        println("u: " + u)
+        //println("u: " + u)
         c += setRecoveryToStringWithAnd(s)
-        println("c: " + c)
+        //println("c: " + c)
         round += 1
       }
 
@@ -652,7 +670,7 @@ case class ATree(name: String) extends Serializable {
 
   def exprToPredicateSet(expr: String): Set[String] = {
     var stringSet: Set[String] = Set.empty
-    println("expr :  " + expr)
+    //println("expr :  " + expr)
 
     for (predicate <- expr.split('^')) {
       if (predicate.contains('∨')) {
@@ -711,9 +729,7 @@ case class ATree(name: String) extends Serializable {
             childNodes(i).parents(j).childs += newNode
           }
           childNodes(i).parents -= childNodes(i).parents(j)
-          if (
-            !newNode.parents.contains(childNodes(i).parents(j)) && childNodes(i)
-              .parents(j) != newNode
+          if ( !newNode.parents.contains(childNodes(i).parents(j)) && childNodes(i).parents(j) != newNode
           ) {
             newNode.parents += childNodes(i).parents(j)
           }
@@ -778,7 +794,12 @@ case class ATree(name: String) extends Serializable {
 
 }
 
-object Nodes extends App {
+
+
+
+
+
+object nodes extends App {
   def generateID(_expression: String): Long = {
     val predicatesAndOperators: List[Char] = _expression.toList
     var id: Int = 0
@@ -794,9 +815,9 @@ object Nodes extends App {
   // tree.insert("BTC>3^ETH>9^DOGE>10")
   // tree.insert("BTC>3^ETH>9^SOL>20")
   // tree.insert("Seq(Apple>3,Bean<2,Car>3)^ETH>9")
-  tree.insert("Seq(A>3,B<2,C>3)")
-  tree.insert("Seq(A>3,B<2,C>3)^ETH>9")
-  tree.insert("A>3^B<2^C>3^SOL>20")
+  // tree.insert("Seq(A>3,B<2,C>3)")
+  // tree.insert("Seq(A>3,B<2,C>3)^ETH>9")
+  // tree.insert("A>3^B<2^C>3^SOL>20")
   // tree.insert("A>3^B<2^C>3^SOL>20")
   // tree.insert("BTC>3^ETH>9^DOGE>10")
   // tree.insert("BTC>3^ETH>9^SOL>20")
@@ -808,7 +829,7 @@ object Nodes extends App {
   )
   println("------------4444444444444444443-----------")
   tree.leafNodeArrayBuffer.foreach(x => println(x.expression))
-  val regex = new Regex("([A-Za-z]+)[<>]\\d+")
+  //val regex = new Regex("([A-Za-z]+)[<>]\\d+")
   val groupMap = tree.leafNodeArrayBuffer.groupBy(x =>
     
     x.expression.takeWhile(_ != '>').takeWhile(_ != '<')
@@ -828,25 +849,25 @@ object Nodes extends App {
   // println(
   //   s"A>3^B<2^C>3 childs: ${tree.hen(generateID("A>3^B<2^C>3")).childs.map(_.expression)}"
   // )
-  println("--------------------------------")
-  tree.hen(generateID("A>3")).receiveResult(true,"13", new Leaf_Node("0"))
-  Thread.sleep(500)
-  tree.hen(generateID("B<2")).receiveResult(true,"1",new Leaf_Node("0"))
-  Thread.sleep(500)
-  tree.hen(generateID("C>3")).receiveResult(true,"4", new Leaf_Node("0"))
-  //tree.hen(generateID("B<2")).receiveResult(true,"1",new Leaf_Node("0"))
-  tree.hen(generateID("ETH>9")).receiveResult(true,"1",new Leaf_Node("0"))
+  // println("--------------------------------")
+  // tree.hen(generateID("A>3")).receiveResult(true,"13", new Leaf_Node("0"))
+  // Thread.sleep(500)
+  // tree.hen(generateID("B<2")).receiveResult(true,"1",new Leaf_Node("0"))
+  // Thread.sleep(500)
+  // tree.hen(generateID("C>3")).receiveResult(true,"4", new Leaf_Node("0"))
+  // //tree.hen(generateID("B<2")).receiveResult(true,"1",new Leaf_Node("0"))
+  // tree.hen(generateID("ETH>9")).receiveResult(true,"1",new Leaf_Node("0"))
   
-  println("A>3^B<2^C>3 state: " + tree.hen(generateID("A>3^B<2^C>3")).state)
-  println("Seq(A>3,B<2,C>3) state" + tree.hen(generateID("Seq(A>3,B<2,C>3)")).state)
-  println("Seq(A>3,B<2,C>3)^ETH>9 state: " + tree.hen(generateID("Seq(A>3,B<2,C>3)^ETH>9")).state)
-  tree.hen(generateID("SOL>20")).receiveResult(true,"23",new Leaf_Node("0"))
-  println("A>3^B<2^C>3^SOL>20 state: "+ tree.hen(generateID("A>3^B<2^C>3^SOL>20")).state)
-  tree.hen(generateID("A>3")).receiveResult(false,"13", new Leaf_Node("0"))
-  println("A>3^B<2^C>3 state: "+ tree.hen(generateID("A>3^B<2^C>3")).state)
-  println("Seq(A>3,B<2,C>3) state: " + tree.hen(generateID("Seq(A>3,B<2,C>3)")).state)
-  println("Seq(A>3,B<2,C>3)^ETH>9 state: " + tree.hen(generateID("Seq(A>3,B<2,C>3)^ETH>9")).state)
-  println("A>3^B<2^C>3^SOL>20 state:" +tree.hen(generateID("A>3^B<2^C>3^SOL>20")).state)
+  // println("A>3^B<2^C>3 state: " + tree.hen(generateID("A>3^B<2^C>3")).state)
+  // println("Seq(A>3,B<2,C>3) state" + tree.hen(generateID("Seq(A>3,B<2,C>3)")).state)
+  // println("Seq(A>3,B<2,C>3)^ETH>9 state: " + tree.hen(generateID("Seq(A>3,B<2,C>3)^ETH>9")).state)
+  // tree.hen(generateID("SOL>20")).receiveResult(true,"23",new Leaf_Node("0"))
+  // println("A>3^B<2^C>3^SOL>20 state: "+ tree.hen(generateID("A>3^B<2^C>3^SOL>20")).state)
+  // tree.hen(generateID("A>3")).receiveResult(false,"13", new Leaf_Node("0"))
+  // println("A>3^B<2^C>3 state: "+ tree.hen(generateID("A>3^B<2^C>3")).state)
+  // println("Seq(A>3,B<2,C>3) state: " + tree.hen(generateID("Seq(A>3,B<2,C>3)")).state)
+  // println("Seq(A>3,B<2,C>3)^ETH>9 state: " + tree.hen(generateID("Seq(A>3,B<2,C>3)^ETH>9")).state)
+  // println("A>3^B<2^C>3^SOL>20 state:" +tree.hen(generateID("A>3^B<2^C>3^SOL>20")).state)
 
   // println(
   //   s"A^B^C parents: ${tree.hen(generateID("A>3^B<2^C>3")).parents.map(_.expression)}"

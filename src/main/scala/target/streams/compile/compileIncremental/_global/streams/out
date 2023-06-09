@@ -1,0 +1,20 @@
+[0m[[0m[0mdebug[0m] [0m[0m[zinc] IncrementalCompile -----------[0m
+[0m[[0m[0mdebug[0m] [0m[0mIncrementalCompile.incrementalCompile[0m
+[0m[[0m[0mdebug[0m] [0m[0mprevious = Stamps for: 0 products, 0 sources, 0 libraries[0m
+[0m[[0m[0mdebug[0m] [0m[0mcurrent source = Set(${BASE}/UpdateStateByKeyTest.scala, ${BASE}/Experiment1_5.scala, ${BASE}/Experiment1_1.scala, ${BASE}/Experiment1_6.scala, ${BASE}/StreamingNode.scala, ${BASE}/Experiment1_3.scala, ${BASE}/MainTest.scala, ${BASE}/BatchComputeSlope1.scala, ${BASE}/DataBuffer1.scala, ${BASE}/StreamingNode1.scala, ${BASE}/Experiment1_4.scala, ${BASE}/Experiment2_1.scala, ${BASE}/MapGroupWithStateNode_test.scala, ${BASE}/NodeTest.scala, ${BASE}/Experiment1_7.scala, ${BASE}/MapGroupWithStateNodeKafka.scala, ${BASE}/KafkaRegression.scala, ${BASE}/MapGroupsWithStateExample.scala, ${BASE}/MapGroupWithStateNode.scala, ${BASE}/nodes.scala, ${BASE}/Experiment1_2.scala, ${BASE}/DataBuffer.scala, ${BASE}/LinearRegressionExample.scala, ${BASE}/Experiment2_11.scala, ${BASE}/BatchComputeSlope.scala, ${BASE}/SparkRegression.scala, ${BASE}/TestNodes.scala)[0m
+[0m[[0m[0mdebug[0m] [0m[0m> initialChanges = InitialChanges(Changes(added = Set(${BASE}/StreamingNode.scala, ${BASE}/MapGroupsWithStateExample.scala, ${BASE}/Experiment1_3.scala, ${BASE}/nodes.scala, ${BASE}/Experiment1_5.scala, ${BASE}/Experiment2_1.scala, ${BASE}/Experiment1_1.scala, ${BASE}/BatchComputeSlope.scala, ${BASE}/Experiment1_7.scala, ${BASE}/DataBuffer1.scala, ${BASE}/LinearRegressionExample.scala, ${BASE}/DataBuffer.scala, ${BASE}/Experiment2_11.scala, ${BASE}/TestNodes.scala, ${BASE}/SparkRegression.scala, ${BASE}/Experiment1_4.scala, ${BASE}/MapGroupWithStateNode_test.scala, ${BASE}/MapGroupWithStateNode.scala, ${BASE}/Experiment1_2.scala, ${BASE}/NodeTest.scala, ${BASE}/MapGroupWithStateNodeKafka.scala, ${BASE}/Experiment1_6.scala, ${BASE}/MainTest.scala, ${BASE}/BatchComputeSlope1.scala, ${BASE}/UpdateStateByKeyTest.scala, ${BASE}/KafkaRegression.scala, ${BASE}/StreamingNode1.scala), removed = Set(), changed = Set(), unmodified = ...),Set(),Set(),API Changes: Set())[0m
+[0m[[0m[0mdebug[0m] [0m[0mFull compilation, no sources in previous analysis.[0m
+[0m[[0m[0mdebug[0m] [0m[0mall 27 sources are invalidated[0m
+[0m[[0m[0mdebug[0m] [0m[0mInitial set of included nodes: [0m
+[0m[[0m[0mdebug[0m] [0m[0mRecompiling all sources: number of invalidated sources > 50.0% of all sources[0m
+[0m[[0m[0mdebug[0m] [0m[0mcompilation cycle 1[0m
+[0m[[0m[0minfo[0m] [0m[0mcompiling 27 Scala sources to /home/pcdm/hann/Kafka_Regression/src/main/scala/target/scala-2.12/classes ...[0m
+[0m[[0m[0mdebug[0m] [0m[0mGetting org.scala-sbt:compiler-bridge_2.12:1.6.0:compile for Scala 2.12.15[0m
+[0m[[0m[0mdebug[0m] [0m[0m[zinc] Running cached compiler 69d2fdc for Scala compiler version 2.12.15[0m
+[0m[[0m[0mdebug[0m] [0m[0m[zinc] The Scala compiler is invoked with:[0m
+[0m[[0m[0mdebug[0m] [0m[0m	-bootclasspath[0m
+[0m[[0m[0mdebug[0m] [0m[0m	/home/pcdm/.sdkman/candidates/java/8.0.302-open/jre/lib/resources.jar:/home/pcdm/.sdkman/candidates/java/8.0.302-open/jre/lib/rt.jar:/home/pcdm/.sdkman/candidates/java/8.0.302-open/jre/lib/sunrsasign.jar:/home/pcdm/.sdkman/candidates/java/8.0.302-open/jre/lib/jsse.jar:/home/pcdm/.sdkman/candidates/java/8.0.302-open/jre/lib/jce.jar:/home/pcdm/.sdkman/candidates/java/8.0.302-open/jre/lib/charsets.jar:/home/pcdm/.sdkman/candidates/java/8.0.302-open/jre/lib/jfr.jar:/home/pcdm/.sdkman/candidates/java/8.0.302-open/jre/classes:/home/pcdm/.sbt/boot/scala-2.12.15/lib/scala-library.jar[0m
+[0m[[0m[0mdebug[0m] [0m[0m	-classpath[0m
+[0m[[0m[0mdebug[0m] [0m[0m	/home/pcdm/hann/Kafka_Regression/src/main/scala/target/scala-2.12/classes[0m
+[0m[[0m[0mdebug[0m] [0m[0mCompilation failed (CompilerInterface)[0m
+[0m[[0m[31merror[0m] [0m[0m(Compile / [31mcompileIncremental[0m) Compilation failed[0m
