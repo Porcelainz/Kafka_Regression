@@ -532,7 +532,7 @@ case class ATree(name: String) extends Serializable {
   def insert(_expression: String): Node = {
 
     val id = generateID(_expression )
-    println(_expression + " ID:  " + id )
+    //println(_expression + " ID:  " + id )
     if (hen.getOrElse(id, 0) != 0) {
       hen(id).useCount += 1
       hen(id)
@@ -747,7 +747,7 @@ case class ATree(name: String) extends Serializable {
       // println(i)
       var j = 0
       
-      while (j < childNodes(i).parents.size - 1 && childNodes(i).parents.nonEmpty) {
+      while (j < childNodes(i).parents.size - 1  && childNodes(i).parents.nonEmpty) {
         // println(i,j + "childNodes parent size: " + childNodes(i).parents.size)  
         //println(childNodes(i).parents.mkString(", "))
         if (
@@ -757,37 +757,19 @@ case class ATree(name: String) extends Serializable {
           )
         ) {
 
-          //childNodes(i).parents(j).childs -= childNodes(i) // old
-          if (i < childNodes.size) {  //new
-          if (childNodes(i).parents.nonEmpty && j < childNodes(i).parents.size) {childNodes(i).parents(j).childs -= childNodes(i)} //old 
-          } // new 
-
-
-          if (i < childNodes.size) { // new 
-            if (j < childNodes(i).parents.size){  //new
-              if (!childNodes(i).parents(j).childs.contains(newNode)) { //old 
-                childNodes(i).parents(j).childs += newNode //old
-                } //new 
-            } //new 
-          } //new
-          
-          //childNodes(i).parents -= childNodes(i).parents(j) //old
-          if (i < childNodes.size) { //new
-            if (j < childNodes(i).parents.size) { //new 
-              if (!newNode.parents.contains(childNodes(i).parents(j)) && childNodes(i).parents(j) != newNode) { //new 
-                newNode.parents += childNodes(i).parents(j) //new
-              }
-            }
-          } //new 
-          // if ( !newNode.parents.contains(childNodes(i).parents(j)) && childNodes(i).parents(j) != newNode) { //old
-          //   newNode.parents += childNodes(i).parents(j) //old
-          // }
-          
-            if (j < childNodes(i).parents.size) { //new 
-              childNodes(i).parents -= childNodes(i).parents(j) //new
-            }
-          
-          //childNodes(i).parents -= childNodes(i).parents(j) //old
+          //childNodes(i).parents(j).childs -= childNodes(i)
+          if (childNodes(i).parents.nonEmpty && j < childNodes(i).parents.size) {childNodes(i).parents(j).childs -= childNodes(i)}
+          if (!childNodes(i).parents(j).childs.contains(newNode)) {
+            childNodes(i).parents(j).childs += newNode
+          }
+         
+          //childNodes(i).parents -= childNodes(i).parents(j)
+          //childNodes(i).parents -= childNodes(i).parents(j)
+          if ( !newNode.parents.contains(childNodes(i).parents(j)) && childNodes(i).parents(j) != newNode
+          ) {
+            newNode.parents += childNodes(i).parents(j)
+          }
+          childNodes(i).parents -= childNodes(i).parents(j)
          
 
         } else {
