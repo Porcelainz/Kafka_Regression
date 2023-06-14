@@ -1,15 +1,22 @@
 import scala.util.matching.Regex
-
+import com.han.ATree
+import scala.util.hashing.MurmurHash3
 object Experiment1_5 {
   def generateID(_expression: String): Long = {
-    val predicatesAndOperators: List[Char] = _expression.toList
-    var id: Int = 0
-    for (char <- predicatesAndOperators) {
-      id += char.hashCode() * char.hashCode()
-    }
+    // val predicatesAndOperators: List[Char] = _expression.toList
+    // var id: Int = 0
+    
+    
+    // for (char <- predicatesAndOperators) {
+    //   id += char.hashCode() * char.hashCode()
+    // }
+    val seed = 0 // Seed value for the hash function
+    val components = _expression.split('^').sorted.mkString("^") // Sort components for consistent ordering
+    val hash:Long = MurmurHash3.stringHash(components, seed)
 
-    id
+    hash
 
+    //id
   }
 
   def main(args: Array[String]): Unit = {

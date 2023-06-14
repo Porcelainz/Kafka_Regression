@@ -1,5 +1,5 @@
 package com.han
-
+import scala.util.hashing.MurmurHash3
 import scala.collection.mutable.ListBuffer
 import scala.collection.mutable.HashMap
 import scala.util.control.Breaks._
@@ -51,7 +51,7 @@ case class Switch_Node(_name: String, val targetNodes: Array[Leaf_Node])
       }
       
     }
-    println(equal_symbol_Map)
+    //println(equal_symbol_Map)
     equal_symbol_Map
   }
 
@@ -511,7 +511,7 @@ case class Leaf_Node(val expression: String) extends Node {
 }
 
 case class ATree(name: String) extends Serializable {
-
+  var for_find_max_intersect_List:HashMap[Long, Node] = HashMap[Long, Node]()
   var hen: HashMap[Long, Node] = HashMap[Long, Node]()
   var root: ListBuffer[Node] = ListBuffer[Node]()
   var leafNodeArrayBuffer: ArrayBuffer[Node] = ArrayBuffer[Node]()
@@ -521,23 +521,29 @@ case class ATree(name: String) extends Serializable {
   var seq_index = 0
   def add_query(query: String): Unit = {
     if ( query.contains('∨') ) {
-      query.split('∨').foreach(x => insert(x))
+      query.split('∨').foreach(x => insert(x,true))
     } else {
-      insert(query)
+      insert(query, true)
     }
     
   }
 
 
-  def insert(_expression: String): Node = {
+  def insert(_expression: String, is_userQuery: Boolean): Node = {
 
     val id = generateID(_expression )
     //println(_expression + " ID:  " + id )
-    if (hen.getOrElse(id, 0) != 0) {
+    if (hen.getOrElse(id,0) != 0) {
+      //println("Already in the tree !!!!!!!!!!!!!!!!!")
       hen(id).useCount += 1
       hen(id)
     } else {
-      var childExprs = reorganize(_expression)
+      //println("come to here")
+      var childExprs = List(_expression)
+      if (_expression.split('^').length > 2){
+        childExprs = reorganize(_expression)
+      }
+      
       var flag = true
       if (childExprs.isEmpty) {
         childExprs = List(_expression)
@@ -551,7 +557,7 @@ case class ATree(name: String) extends Serializable {
         if (childExprs.size > 1) {
           for (expr <- childExprs) {
             //println("!!!!!!!!!!!!!!!!!!!expr: " + expr)
-            var childNode = insert(expr)
+            var childNode = insert(expr,false)
             childNodes += childNode
           }
         } else {
@@ -560,13 +566,13 @@ case class ATree(name: String) extends Serializable {
             var predicates = expr.split('^')
             for (s <- predicates) {
               if (!s.contains("Seq")) {
-                val childNode = insert(s)
+                val childNode = insert(s,false)
                 childNodes += childNode
               } else if (s.contains("Seq")) {
                 val expr = s.substring(4, s.length() - 1)
                 var predicates = expr.split(",")
                 val exprwithand = predicates.mkString("^")
-                val childNode = insert(exprwithand)
+                val childNode = insert(exprwithand,false)
                 childNodes += childNode
               }
             }
@@ -574,7 +580,7 @@ case class ATree(name: String) extends Serializable {
             val expr = childExprs(0).substring(4, childExprs(0).length() - 1)
             var predicates = expr.split(",")
             val exprwithand = predicates.mkString("^")
-            val childNode = insert(exprwithand)
+            val childNode = insert(exprwithand,false)
             childNodes += childNode
           }
 
@@ -589,7 +595,7 @@ case class ATree(name: String) extends Serializable {
         selfAdjust(node)
 
       }
-
+      if (node.expression.split('^').length >= 2) {for_find_max_intersect_List += (id -> node) }
       hen += (id -> node)
       node
     }
@@ -613,16 +619,20 @@ case class ATree(name: String) extends Serializable {
   }
 
   private def generateID(_expression: String): Long = {
-    val predicatesAndOperators: List[Char] = _expression.toList
-    var id: Int = 0
+    // val predicatesAndOperators: List[Char] = _expression.toList
+    // var id: Int = 0
     
     
-    for (char <- predicatesAndOperators) {
-      id += char.hashCode() * char.hashCode()
-    }
-    
+    // for (char <- predicatesAndOperators) {
+    //   id += char.hashCode() * char.hashCode()
+    // }
+    val seed = 0 // Seed value for the hash function
+    val components = _expression.split('^').sorted.mkString("^") // Sort components for consistent ordering
+    val hash:Long = MurmurHash3.stringHash(components, seed)
 
-    id
+    hash
+
+    //id
   }
 
   private def reorganize(_expression: String): List[String] = {
@@ -631,6 +641,7 @@ case class ATree(name: String) extends Serializable {
     var u = ListBuffer(List(_expression))
       .map(_.flatMap(_.split("[\\^∨]")).toSet)
       .toSet
+    //println(u)
 
     var c: ListBuffer[String] = ListBuffer[String]()
     var round = 0
@@ -664,7 +675,7 @@ case class ATree(name: String) extends Serializable {
       target: HashMap[Int, Node]
   ): Set[String] = {
     var maxinterSet: Set[String] = Set.empty
-    for ((id, node) <- target) {
+    for ((id,node) <- for_find_max_intersect_List) {
       val interSet = set1.intersect(exprToPredicateSet(node.expression))
       if (interSet.size > maxinterSet.size) {
         maxinterSet = interSet
@@ -720,17 +731,21 @@ case class ATree(name: String) extends Serializable {
       target_set: Set[Set[String]],
       _expression: String
   ): Set[String] = {
-
+    //println(_expression +"!!!! expression")
     var maxinterSet: Set[String] = Set.empty
-    val hen_no_self = (hen - generateID(_expression)).filter(x => x._2.expression.length >1)
+    val no_self_for_find_max = for_find_max_intersect_List - generateID(_expression)
+    //val no_self_for_find_max = hen - generateID(_expression)
     
     for (target <- target_set) {
-      for ((id, node) <- hen_no_self) {
-        val interSet = target.intersect(exprToPredicateSet(node.expression))
+      for ((id,node) <- no_self_for_find_max) {
+        var interSet: Set[String] = Set.empty
+        if(maxinterSet.size < exprToPredicateSet(node.expression).size) { interSet = target.intersect(exprToPredicateSet(node.expression))}
         //println(target.toString + " with " + exprToPredicateSet(node.expression).toString + "---" +  interSet.toString + "== intersect set")
         if (interSet.size > maxinterSet.size && interSet.size != target.size) {
-          //println("here")
+          //println( "here!!!!!!!!!! is interSet size equals target.size ?" + (interSet.size == target.size).toString())
+         
           maxinterSet = interSet
+          //println(maxinterSet)
         }
       }
     }
@@ -739,6 +754,7 @@ case class ATree(name: String) extends Serializable {
   }
 
   def selfAdjust(newNode: Node): Unit = {
+    //println(newNode.expression + " --------expr!!!!!!!!!!!!!")
     var childNodes = newNode.childs
     //println(childNodes.mkString(", "))
     for (i <- 0 until childNodes.size) {
@@ -758,19 +774,24 @@ case class ATree(name: String) extends Serializable {
         ) {
 
           //childNodes(i).parents(j).childs -= childNodes(i)
-          if (childNodes(i).parents.nonEmpty && j < childNodes(i).parents.size) {childNodes(i).parents(j).childs -= childNodes(i)}
-          if (!childNodes(i).parents(j).childs.contains(newNode)) {
-            childNodes(i).parents(j).childs += newNode
-          }
+          if (childNodes(i).parents.nonEmpty && j < childNodes(i).parents.size && childNodes(i).parents(j) != newNode) {childNodes(i).parents(j).childs -= childNodes(i)}
+          //println("i,j  here ---------------" + i + ", " + j + "child nodes size = " + childNodes.size)
+          
+            if (!childNodes(i).parents(j).childs.contains(newNode)) {
+              childNodes(i).parents(j).childs += newNode
+            }
+          
          
           //childNodes(i).parents -= childNodes(i).parents(j)
           //childNodes(i).parents -= childNodes(i).parents(j)
-          if ( !newNode.parents.contains(childNodes(i).parents(j)) && childNodes(i).parents(j) != newNode
-          ) {
-            newNode.parents += childNodes(i).parents(j)
-          }
-          childNodes(i).parents -= childNodes(i).parents(j)
-         
+          
+            if ( !newNode.parents.contains(childNodes(i).parents(j)) && childNodes(i).parents(j) != newNode) {
+              newNode.parents += childNodes(i).parents(j)
+            }
+          
+          
+            childNodes(i).parents -= childNodes(i).parents(j)
+          
 
         } else {
           j += 1
