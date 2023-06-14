@@ -1,6 +1,7 @@
 import scala.util.matching.Regex
 import org.apache.hadoop.shaded.org.checkerframework.checker.units.qual.s
-
+import java.lang.management.ManagementFactory
+import com.han.ATree
 object Experiment1_1 {
   def generateID(_expression: String): Long = {
     val predicatesAndOperators: List[Char] = _expression.toList
@@ -12,6 +13,23 @@ object Experiment1_1 {
     id
 
   }
+  def getObjectMemoryUsage(obj: AnyRef): Long = {
+  val runtime = ManagementFactory.getMemoryMXBean
+  val memoryUsage = runtime.getHeapMemoryUsage
+  val sizeBefore = memoryUsage.getUsed
+
+  // Create a reference to the object to prevent it from being garbage collected
+  val reference = new Array[AnyRef](1)
+  reference(0) = obj
+
+  val sizeAfter = memoryUsage.getUsed
+  val objectMemoryUsage = sizeAfter - sizeBefore
+
+  // Clear the reference to the object
+  reference(0) = null
+
+  objectMemoryUsage
+}
 
   def main(args: Array[String]): Unit = {
     val tree = new ATree("Experiment_1")
@@ -40,6 +58,8 @@ object Experiment1_1 {
     println("P1^P2's childs: "  +tree.hen(generateID("P1^P2")).childs)
 
     println(s"Program Run Time: ${endTime - startTime} ms")
+    val memoryUsage = getObjectMemoryUsage(tree)
+    println(s"Memory usage of myObject: $memoryUsage bytes")
 
   }
 }

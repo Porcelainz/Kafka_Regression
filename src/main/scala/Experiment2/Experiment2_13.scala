@@ -1,8 +1,27 @@
 
 import scala.collection.mutable.ListBuffer
-
+import java.lang.management.ManagementFactory
+import org.apache.spark.util.SizeEstimator
+import com.han.ATree
 object Experiment2_13 {
-  
+  def getObjectMemoryUsage(obj: AnyRef): Long = {
+  val runtime = ManagementFactory.getMemoryMXBean
+  val memoryUsage = runtime.getHeapMemoryUsage
+  val sizeBefore = memoryUsage.getUsed
+
+  // Create a reference to the object to prevent it from being garbage collected
+  val reference = new Array[AnyRef](1)
+  reference(0) = obj
+
+  val sizeAfter = memoryUsage.getUsed
+  val objectMemoryUsage = sizeAfter - sizeBefore
+
+  // Clear the reference to the object
+  //reference(0) = null
+
+  objectMemoryUsage
+}
+
   def main(args: Array[String]): Unit = {
   val query_set = ListBuffer[String]()
   val baseQueries = List(
@@ -30,7 +49,7 @@ object Experiment2_13 {
 }
 val query_test = "P1^P2^P3^P4^P5^P6^P7^P8^P9^P10^P11^P12^P13^P14^P15^P16"
 // Generate 100 random queries and add them to query_set
-for (_ <- 1 to 50000) {
+for (_ <- 1 to 10000) {
   val randomQuery = generateRandomQuery()
   query_set += query_test
 }
@@ -43,5 +62,9 @@ println(query_set.length)
   tree.hen.foreach(x => tree.checkNodeChildsParent(x._2))
   val endTime = System.currentTimeMillis()
   println(s"Program Run Time: ${endTime - startTime} ms")
+  val a = "aaaa"
+  val memorySize = SizeEstimator.estimate(tree)
+  println(s"Estimated memory size: $memorySize bytes")
+
   }
 }
