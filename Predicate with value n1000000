@@ -1,0 +1,20 @@
+Program Run Time: 5372483 ms
+Whole tree Node number: 1621406
+non leaf node number: 1618274
+leaf_node number: 3132
+shared node number: 618274 
+Switch Node Creation Time: 157 ms
+Switch Number: 36
+
+Estimated memory size: 1234921656 bytes 
+---------------------------------------------------------
+Program Run Time: 2027347 ms
+Whole tree Node number: 1805546
+non leaf node number: 1802414
+leaf_node number: 3132
+shared node number: 802414 
+Switch Node Creation Time: 176 ms
+Switch Number: 36
+
+Estimated memory size: 1867694600 bytes 
+---------------------------------------------------------

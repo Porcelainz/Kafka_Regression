@@ -1,22 +1,29 @@
 import scala.util.matching.Regex
-
+import com.han.ATree
+import scala.util.hashing.MurmurHash3
 object Experiment1_3 {
   def generateID(_expression: String): Long = {
-    val predicatesAndOperators: List[Char] = _expression.toList
-    var id: Int = 0
-    for (char <- predicatesAndOperators) {
-      id += char.hashCode() * char.hashCode()
-    }
+    // val predicatesAndOperators: List[Char] = _expression.toList
+    // var id: Int = 0
+    
+    
+    // for (char <- predicatesAndOperators) {
+    //   id += char.hashCode() * char.hashCode()
+    // }
+    val seed = 0 // Seed value for the hash function
+    val components = _expression.split('^').sorted.mkString("^") // Sort components for consistent ordering
+    val hash:Long = MurmurHash3.stringHash(components, seed)
 
-    id
+    hash
 
+    //id
   }
 
   def main(args: Array[String]): Unit = {
     val tree = new ATree("Experiment_1")
     val query1 = "P1^P2^P3"
     val query2 = "Seq(P4,P5,P6)"
-    //val query3 = "P1^P2^P3^P4"
+   // val query2 = "P1^P2^P3^P4"
     tree.add_query(query1)
     tree.add_query(query2)
     //tree.add_query(query3)
@@ -38,7 +45,7 @@ object Experiment1_3 {
     println(query2 + "'s childs: "  +tree.hen(generateID(query2)).childs)
     //println(query1 + "'s parents: "  +tree.hen(generateID(query1)).parents)
    
-    println("P4^P5^P6's childs: "  +tree.hen(generateID("P4^P5^P6")).childs)
+    //println("P4^P5^P6's childs: "  +tree.hen(generateID("P4^P5^P6")).childs)
 
 
   }

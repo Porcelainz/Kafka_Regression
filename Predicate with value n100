@@ -15,3 +15,13 @@ Estimated memory size: 230288 bytes
 Switch Node Creation Time: 33 ms
 Switch Number: 16
 
+Program Run Time: 109 ms
+Estimated memory size: 310296 bytes 
+Whole tree Node number: 485
+non leaf node number: 100
+leaf_node number: 385
+shared node number: 0 
+Switch Node Creation Time: 35 ms
+Switch Number: 34
+
+---------------------------------------------------------

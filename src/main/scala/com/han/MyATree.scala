@@ -11,6 +11,9 @@ import java.io.Serializable
 import breeze.numerics.exp
 import os.remove
 import spire.std.array
+import scala.collection.parallel.CollectionConverters._
+import scala.collection.mutable
+import scala.collection.parallel.ParSeq
 
 trait Node extends Product with Serializable {
 
@@ -511,14 +514,15 @@ case class Leaf_Node(val expression: String) extends Node {
 }
 
 case class ATree(name: String) extends Serializable {
-  var for_find_max_intersect_List:HashMap[Long, Node] = HashMap[Long, Node]()
+  var non_leaf_node :HashMap[Long, Node] = HashMap[Long, Node]()
   var hen: HashMap[Long, Node] = HashMap[Long, Node]()
   var root: ListBuffer[Node] = ListBuffer[Node]()
   var leafNodeArrayBuffer: ArrayBuffer[Node] = ArrayBuffer[Node]()
   var groupBySource_Map: Map[String, ArrayBuffer[Node]] =
     Map[String, ArrayBuffer[Node]]()
   var switch_Node_Map = Map[String, Switch_Node]()
-  var seq_index = 0
+  var nodes_ancestors_expression_Map: HashMap[String, Set[String]] =
+    HashMap[String, Set[String]]()
   def add_query(query: String): Unit = {
     if ( query.contains('∨') ) {
       query.split('∨').foreach(x => insert(x,true))
@@ -538,6 +542,18 @@ case class ATree(name: String) extends Serializable {
       hen(id).useCount += 1
       hen(id)
     } else {
+      for (predicate <- _expression.split('^')) {
+        
+      
+        if(nodes_ancestors_expression_Map.contains(predicate)) {
+          // Key exists, retrieve the ListBuffer and add the new element
+          nodes_ancestors_expression_Map(predicate) += _expression
+        } else {
+          // Key doesn't exist, create a new ListBuffer and associate it with the key
+          val newSet = Set[String](_expression)
+          nodes_ancestors_expression_Map.put(predicate, newSet)
+        }
+      }
       //println("come to here")
       var childExprs = List(_expression)
       if (_expression.split('^').length > 2){
@@ -549,7 +565,7 @@ case class ATree(name: String) extends Serializable {
         childExprs = List(_expression)
         flag = false
       }
-
+      //println(_expression +" expression's childExprs: " + childExprs.mkString(","))
       //println("flag: " + flag)
       var childNodes: ListBuffer[Node] = ListBuffer[Node]()
 
@@ -595,7 +611,7 @@ case class ATree(name: String) extends Serializable {
         selfAdjust(node)
 
       }
-      if (node.expression.split('^').length >= 2) {for_find_max_intersect_List += (id -> node) }
+      if (node.expression.split('^').length >= 2 || node.expression.contains("Seq")) {non_leaf_node += (id -> node) }
       hen += (id -> node)
       node
     }
@@ -652,7 +668,7 @@ case class ATree(name: String) extends Serializable {
         val s = selectAn_S_that_maximizes_insect_in_Hen(u, _expression)
         //println("s: " + s)
         if (s.isEmpty) {
-
+          //println("trigger break")
           break()
         }
         u = u.map(_.filter(!s.contains(_)))
@@ -670,21 +686,21 @@ case class ATree(name: String) extends Serializable {
 
   }
 
-  private def find_max_intersect(
-      set1: Set[String],
-      target: HashMap[Int, Node]
-  ): Set[String] = {
-    var maxinterSet: Set[String] = Set.empty
-    for ((id,node) <- for_find_max_intersect_List) {
-      val interSet = set1.intersect(exprToPredicateSet(node.expression))
-      if (interSet.size > maxinterSet.size) {
-        maxinterSet = interSet
-      }
-    }
+  // private def find_max_intersect(
+  //     set1: Set[String],
+  //     target: HashMap[Int, Node]
+  // ): Set[String] = {
+  //   var maxinterSet: Set[String] = Set.empty
+  //   for ((id,node) <- for_find_max_intersect_List) {
+  //     val interSet = set1.intersect(exprToPredicateSet(node.expression))
+  //     if (interSet.size > maxinterSet.size) {
+  //       maxinterSet = interSet
+  //     }
+  //   }
 
-    maxinterSet
+  //   maxinterSet
 
-  }
+  // }
 
   def charSetToStringSet(set: Set[Char]): Set[String] = {
     var stringSet: Set[String] = Set.empty
@@ -726,30 +742,202 @@ case class ATree(name: String) extends Serializable {
     string = string.substring(0, string.length() - 1)
     string
   }
-
+  
   def selectAn_S_that_maximizes_insect_in_Hen(
       target_set: Set[Set[String]],
       _expression: String
   ): Set[String] = {
+
+    def collectAncestors (node: Node): Set[Node] = {
+      var ancestors: Set[Node] = Set.empty
+      if (node.parents.nonEmpty) {
+        for (parent <- node.parents) {
+          // if(parent.expression.contains("Seq")) 
+          ancestors += parent
+          ancestors ++= collectAncestors(parent)
+        }
+      }
+      ancestors
+    }
+
+
+
     //println(_expression +"!!!! expression")
     var maxinterSet: Set[String] = Set.empty
-    val no_self_for_find_max = for_find_max_intersect_List - generateID(_expression)
+    //val no_self_for_find_max = for_find_max_intersect_List - generateID(_expression)
+    //val no_self_for_find_max = (for_find_max_intersect_List - generateID(_expression)).values.map(_.expression).toSeq
+    var no_self_for_find_max:List[String] = List.empty
+    def findDuplicates[T](list: List[T]): List[T] = {
+      val occurrences = mutable.HashMap.empty[T, Int]
+      //val duplicates = mutable.ListBuffer.empty[T]
+      var max_element_count = 0
+      var max_element = List.empty[T]
+      for (element <- list) {
+        val count = occurrences.getOrElse(element, 0) + 1
+        occurrences(element) = count
+        //here should to find max count 
+        if (count > max_element_count) {
+          max_element_count = count
+          max_element = List(element)
+        }
+        if (count == 2) {
+          //duplicates += element
+        }
+      }
+
+      //duplicates.toList // old version
+     //println("max element !!!! "+max_element)
+      max_element //new  version
+    }
+
+    def find_max_appears_expression(predicate_set: Set[String]): List[String] = {
+      
+      val occurrences = mutable.HashMap.empty[String, Int] 
+      var max_element_count = 0
+      var max_element = List.empty[String]
+      var find_max_flag = false
+      breakable {
+      for(predicate <- predicate_set) {
+          breakable {
+            for(ancestors  <-  nodes_ancestors_expression_Map(predicate)) {
+            // println("ancestor" + ancestors)
+                if (ancestors == _expression) {
+
+                } else {
+                val count = occurrences.getOrElse(ancestors, 0) + 1
+                occurrences(ancestors) = count
+                  if (count > max_element_count) {
+                  max_element_count = count
+                  max_element = List(ancestors)
+                  }
+                  if (count > predicate_set.size/2) {
+                    find_max_flag = true
+                    break();
+                  }
+                }
+                
+            } 
+          }
+          if (find_max_flag) {
+            break()
+          }
+        }
+      }
+
+      //println("max element : " + max_element.mkString(","))
+
+
+
+      max_element
+    }
+
+
+
+    def check_predicate_in_tree_or_not(predicate_set : Set[String]): Boolean = {
+      var temp_List: List[String] = List.empty
+      var flag = false
+      var counter = 0
+  //     // par way 
+  //     val parallelPredicateSet = predicate_set.par
+  //     parallelPredicateSet.foreach { predicate =>
+  //   hen.getOrElse(generateID(predicate), 0) match {
+  //     case 0 => counter += 0
+  //     case _ =>
+  //       counter += 1
+  //       val ancestors_Expression_Set = collectAncestors(hen(generateID(predicate))).map(_.expression)
+  //       temp_List ++= ancestors_Expression_Set.toList
+  //   }
+  // }
+      // 3:01
+      for (predicate <- predicate_set) {
+        //println(predicate + " predicate")
+        hen.getOrElse(generateID(predicate),0) match {
+          case 0 => counter += 0
+          case _ => {counter += 1 ;
+              // val ancestors_Expression_Set = collectAncestors(hen(generateID(predicate))).map(_.expression) ; 
+              // //no_self_for_find_max ++= ancestors_Expression_Set
+            
+              // temp_List ++= ancestors_Expression_Set.toList
+            }
+        }
+      }
+      //no_self_for_find_max = findDuplicates(temp_List).sortBy(_.split('^').length).reverse 
+      no_self_for_find_max = find_max_appears_expression(predicate_set)
+      //println("!!!!!!!!!!!!!!!!!!" +no_self_for_find_max)
+      //println("notice!!!!!!!!!!! "+no_self_for_find_max)
+      if (counter > 1) {
+        flag = true
+      }
+      flag
+    }
     //val no_self_for_find_max = hen - generateID(_expression)
     
     for (target <- target_set) {
-      for ((id,node) <- no_self_for_find_max) {
+      if(check_predicate_in_tree_or_not(target)) {
+        for (element <- no_self_for_find_max) {
+          var interSet: Set[String] = Set.empty
+          //println(target.toString() + " with " + exprToPredicateSet(element).toString() + "----" + interSet.toString() + " == interSet")
+          interSet = target.intersect(exprToPredicateSet(element))
+          //println(target.toString + " with " + exprToPredicateSet(node.expression).toString + "---" +  interSet.toString + "== intersect set")
+          if (interSet.size > maxinterSet.size && interSet.size != target.size && interSet.size >1) {
+            //println( "here!!!!!!!!!! is interSet size equals target.size ?" + (interSet.size == target.size).toString())
+          
+            maxinterSet = interSet
+            //println(maxinterSet)
+          } else if(interSet.size == target.size) {
+            val new_interSet = interSet.dropRight(1)
+            maxinterSet = new_interSet
+          }
+        }
+        //println( target.toString +  "'s "+ "Max intersect set: " + maxinterSet.toString())
+      }
+    }
+   /*import scala.collection.parallel.ParIterable  
+   for (target <- target_set) {
+    if (check_predicate_in_tree_or_not(target)) {
+      //var interSet: Set[String] = Set.empty
+      
+      val interSets: ParIterable[Set[String]] = no_self_for_find_max.par.flatMap { expression => 
+        //val interSet = target.intersect(exprToPredicateSet(expression))
         var interSet: Set[String] = Set.empty
-        if(maxinterSet.size < exprToPredicateSet(node.expression).size) { interSet = target.intersect(exprToPredicateSet(node.expression))}
-        //println(target.toString + " with " + exprToPredicateSet(node.expression).toString + "---" +  interSet.toString + "== intersect set")
-        if (interSet.size > maxinterSet.size && interSet.size != target.size) {
-          //println( "here!!!!!!!!!! is interSet size equals target.size ?" + (interSet.size == target.size).toString())
-         
-          maxinterSet = interSet
-          //println(maxinterSet)
+       if(interSet.size <= exprToPredicateSet(expression).size) {
+          interSet = target.intersect(exprToPredicateSet(expression)) 
+        } else {
+          no_self_for_find_max = List.empty
+        }
+        if (interSet.size != target.size && interSet.size > 1){
+          //println("Some here !!" + interSet.size + " : " + target.size )
+          Some(interSet)
+        } else if ( interSet.size == target.size) {
+          val new_interSet = interSet.drop(interSet.size - 1)
+          Some(new_interSet)
+        }
+        else {
+          None
+        }
+        
+      
+      }
+    
+
+      val localMaxInterSet = interSets.reduceOption { (a, b) =>
+        if (a.size > b.size) a
+        else b
+      }
+
+      localMaxInterSet.foreach { localMax =>
+        synchronized {
+          if (localMax.size > maxinterSet.size)
+            maxinterSet = localMax
         }
       }
     }
+  }*/
+
+
+
     //println("Max intersect set: " + maxinterSet)
+    no_self_for_find_max = List.empty
     maxinterSet
   }
 

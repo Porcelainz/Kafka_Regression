@@ -141,3 +141,77 @@ Estimated memory size: 1173368 bytes
 Switch Node Creation Time: 42 ms
 Switch Number: 16
 
+Program Run Time: 932 ms
+Estimated memory size: 1204376 bytes
+ Node number: 1595
+
+Switch Node Creation Time: 38 ms
+Switch Number: 16
+
+Program Run Time: 667 ms
+Estimated memory size: 1206368 bytes
+ Node number: 1611
+
+Switch Node Creation Time: 38 ms
+Switch Number: 16
+
+Program Run Time: 298 ms
+Estimated memory size: 2459408 bytes 
+Whole tree Node number: 3175
+non leaf node number: 1009
+leaf_node number: 2166
+shared node number: 9 
+Switch Node Creation Time: 80 ms
+Switch Number: 34
+
+---------------------------------------------------------
+Program Run Time: 371 ms
+Estimated memory size: 1434816 bytes 
+Whole tree Node number: 1964
+non leaf node number: 1059
+leaf_node number: 905
+shared node number: 59 
+Switch Node Creation Time: 49 ms
+Switch Number: 34
+
+---------------------------------------------------------
+Program Run Time: 460 ms
+Estimated memory size: 1188392 bytes 
+Whole tree Node number: 1641
+non leaf node number: 1233
+leaf_node number: 408
+shared node number: 233 
+Switch Node Creation Time: 34 ms
+Switch Number: 34
+
+---------------------------------------------------------
+Program Run Time: 436 ms
+Estimated memory size: 1179456 bytes 
+Whole tree Node number: 1614
+non leaf node number: 1206
+leaf_node number: 408
+shared node number: 206 
+Switch Node Creation Time: 35 ms
+Switch Number: 34
+
+---------------------------------------------------------
+Program Run Time: 229 ms
+Whole tree Node number: 3151
+non leaf node number: 1007
+leaf_node number: 2144
+shared node number: 7 
+Switch Node Creation Time: 72 ms
+Switch Number: 34
+
+Estimated memory size: 2488360 bytes 
+---------------------------------------------------------
+Program Run Time: 223 ms
+Whole tree Node number: 3168
+non leaf node number: 1001
+leaf_node number: 2167
+shared node number: 1 
+Switch Node Creation Time: 69 ms
+Switch Number: 34
+
+Estimated memory size: 2465904 bytes 
+---------------------------------------------------------

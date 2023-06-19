@@ -1,0 +1,20 @@
+[0m[[0m[0mdebug[0m] [0m[0m[zinc] IncrementalCompile -----------[0m
+[0m[[0m[0mdebug[0m] [0m[0mIncrementalCompile.incrementalCompile[0m
+[0m[[0m[0mdebug[0m] [0m[0mprevious = Stamps for: 0 products, 0 sources, 0 libraries[0m
+[0m[[0m[0mdebug[0m] [0m[0mcurrent source = Set(${BASE}/Experiment2_12.scala, ${BASE}/Experiment2_1.scala, ${BASE}/Experiment2_1_P36.scala, ${BASE}/Experiment2_13.scala, ${BASE}/Experiment2_1_P18.scala, ${BASE}/Experiment2_11.scala)[0m
+[0m[[0m[0mdebug[0m] [0m[0m> initialChanges = InitialChanges(Changes(added = Set(${BASE}/Experiment2_13.scala, ${BASE}/Experiment2_1_P36.scala, ${BASE}/Experiment2_12.scala, ${BASE}/Experiment2_1_P18.scala, ${BASE}/Experiment2_1.scala, ${BASE}/Experiment2_11.scala), removed = Set(), changed = Set(), unmodified = ...),Set(),Set(),API Changes: Set())[0m
+[0m[[0m[0mdebug[0m] [0m[0mFull compilation, no sources in previous analysis.[0m
+[0m[[0m[0mdebug[0m] [0m[0mall 6 sources are invalidated[0m
+[0m[[0m[0mdebug[0m] [0m[0mInitial set of included nodes: [0m
+[0m[[0m[0mdebug[0m] [0m[0mRecompiling all sources: number of invalidated sources > 50.0% of all sources[0m
+[0m[[0m[0mdebug[0m] [0m[0mcompilation cycle 1[0m
+[0m[[0m[0minfo[0m] [0m[0mcompiling 6 Scala sources to /home/pcdm/hann/Kafka_Regression/src/main/scala/Experiment2/target/scala-2.12/classes ...[0m
+[0m[[0m[0mdebug[0m] [0m[0mGetting org.scala-sbt:compiler-bridge_2.12:1.6.0:compile for Scala 2.12.15[0m
+[0m[[0m[0mdebug[0m] [0m[0m[zinc] Running cached compiler 33cf6fa9 for Scala compiler version 2.12.15[0m
+[0m[[0m[0mdebug[0m] [0m[0m[zinc] The Scala compiler is invoked with:[0m
+[0m[[0m[0mdebug[0m] [0m[0m	-bootclasspath[0m
+[0m[[0m[0mdebug[0m] [0m[0m	/home/pcdm/.sdkman/candidates/java/8.0.302-open/jre/lib/resources.jar:/home/pcdm/.sdkman/candidates/java/8.0.302-open/jre/lib/rt.jar:/home/pcdm/.sdkman/candidates/java/8.0.302-open/jre/lib/sunrsasign.jar:/home/pcdm/.sdkman/candidates/java/8.0.302-open/jre/lib/jsse.jar:/home/pcdm/.sdkman/candidates/java/8.0.302-open/jre/lib/jce.jar:/home/pcdm/.sdkman/candidates/java/8.0.302-open/jre/lib/charsets.jar:/home/pcdm/.sdkman/candidates/java/8.0.302-open/jre/lib/jfr.jar:/home/pcdm/.sdkman/candidates/java/8.0.302-open/jre/classes:/home/pcdm/.sbt/boot/scala-2.12.15/lib/scala-library.jar[0m
+[0m[[0m[0mdebug[0m] [0m[0m	-classpath[0m
+[0m[[0m[0mdebug[0m] [0m[0m	/home/pcdm/hann/Kafka_Regression/src/main/scala/Experiment2/target/scala-2.12/classes[0m
+[0m[[0m[0mdebug[0m] [0m[0mCompilation failed (CompilerInterface)[0m
+[0m[[0m[31merror[0m] [0m[0m(Compile / [31mcompileIncremental[0m) Compilation failed[0m

@@ -41,7 +41,7 @@ object Experiment1_7 {
     // tree.add_query(query3)
 
 
-    tree.hen.foreach(x => tree.checkNodeChildsParent(x._2))
+    //tree.hen.foreach(x => tree.checkNodeChildsParent(x._2))
     tree.from_hen_collect_leaf_Node_to_ArrayBuffer(tree.hen, tree.leafNodeArrayBuffer)
     val endTime = System.currentTimeMillis()
     println("------------------Start----------------------------")
@@ -75,11 +75,16 @@ object Experiment1_7 {
     println("P1^P2^P4's parents: "  +tree.hen(generateID("P1^P2^P4")).parents)
     println(query1 + "'s parents: "  +tree.hen(generateID(query1)).parents)
     println("P5^P6's parent: " + tree.hen(generateID("P5^P6")).parents)
-    println("P5^P1^P7^P4^P6' child:" + tree.hen(generateID("P5^P1^P7^P4^P6")).childs) 
+    //println("P5^P1^P7^P4^P6' child:" + tree.hen(generateID("P5^P1^P7^P4^P6")).childs) 
     //println(query7 + "'s parent" + tree.hen(generateID(query7)).parents)
     //println("P4^P5^P6's childs: "  +tree.hen(generateID("P4^P5^P6")).childs)
     // println(generateID("P5^P6^P8"))
     // println(generateID("P5^P6"))
+    println("all node size:" + tree.hen.size)
+    println("no leaf node size" + tree.non_leaf_node.size)
+    tree.non_leaf_node.foreach(x => println(x._2.expression))
+    println("---new=----")
+    tree.nodes_ancestors_expression_Map.foreach(x => println("Node" + x._1 + "'s ancestors: " + x._2.mkString(",")))
 
   }
 

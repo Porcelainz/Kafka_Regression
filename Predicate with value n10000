@@ -57,3 +57,427 @@ Estimated memory size: 12435520 bytes
 Switch Node Creation Time: 38 ms
 Switch Number: 16
 
+Program Run Time: 141187 ms
+Estimated memory size: 12187704 bytes
+ Node number: 17508
+
+Switch Node Creation Time: 44 ms
+Switch Number: 16
+
+Program Run Time: 140255 ms
+Estimated memory size: 11620848 bytes
+ Node number: 17342
+
+Switch Node Creation Time: 41 ms
+Switch Number: 16
+
+Program Run Time: 74667 ms
+Estimated memory size: 10777224 bytes
+ Node number: 13237
+
+Switch Node Creation Time: 72 ms
+Switch Number: 16
+
+Program Run Time: 73854 ms
+Estimated memory size: 10732528 bytes
+ Node number: 13255
+
+Switch Node Creation Time: 78 ms
+Switch Number: 16
+
+Program Run Time: 57300 ms
+Estimated memory size: 15282112 bytes
+ Node number: 14948
+
+Switch Node Creation Time: 155 ms
+Switch Number: 16
+
+Program Run Time: 55214 ms
+Estimated memory size: 161754680 bytes
+ Node number: 37121
+
+Switch Node Creation Time: 2162 ms
+Switch Number: 16
+
+Program Run Time: 138410 ms
+Estimated memory size: 12237664 bytes
+ Node number: 17346
+
+Switch Node Creation Time: 44 ms
+Switch Number: 16
+
+Program Run Time: 136586 ms
+Estimated memory size: 12414296 bytes
+ Node number: 17384
+
+Switch Node Creation Time: 42 ms
+Switch Number: 16
+
+Program Run Time: 39234 ms
+Estimated memory size: 12142632 bytes
+ Node number: 17526
+
+Switch Node Creation Time: 40 ms
+Switch Number: 16
+
+Program Run Time: 14835 ms
+Estimated memory size: 11258416 bytes
+ Node number: 13431
+
+Switch Node Creation Time: 77 ms
+Switch Number: 34
+
+Program Run Time: 1909 ms
+Estimated memory size: 11282192 bytes
+ Node number: 13454
+
+Switch Node Creation Time: 80 ms
+Switch Number: 34
+
+Program Run Time: 1850 ms
+Estimated memory size: 11232760 bytes
+ Node number: 13446
+
+Switch Node Creation Time: 87 ms
+Switch Number: 34
+
+Program Run Time: 1952 ms
+Estimated memory size: 11223576 bytesWhole tree Node number: 13454
+non leaf node number: 10496
+leaf_node number: 2958
+Program Run Time: 1837 ms
+Estimated memory size: 11367672 bytesWhole tree Node number: 13464
+non leaf node number: 10506
+leaf_node number: 2958
+shared node number: 506Switch Node Creation Time: 88 ms
+Switch Number: 34
+
+---------------------------------------------------------
+Program Run Time: 1976 ms
+Estimated memory size: 11151456 bytesWhole tree Node number: 13473
+non leaf node number: 10515
+leaf_node number: 2958
+shared node number: 515 
+Switch Node Creation Time: 82 ms
+Switch Number: 34
+
+---------------------------------------------------------
+Program Run Time: 2102 ms
+Estimated memory size: 11361800 bytes 
+Whole tree Node number: 13484
+non leaf node number: 10526
+leaf_node number: 2958
+shared node number: 526 
+Switch Node Creation Time: 94 ms
+Switch Number: 34
+
+---------------------------------------------------------
+Program Run Time: 1450 ms
+Estimated memory size: 11388976 bytes 
+Whole tree Node number: 13475
+non leaf node number: 10517
+leaf_node number: 2958
+shared node number: 517 
+Switch Node Creation Time: 87 ms
+Switch Number: 34
+
+---------------------------------------------------------
+Program Run Time: 1591 ms
+Estimated memory size: 11293624 bytes 
+Whole tree Node number: 13449
+non leaf node number: 10491
+leaf_node number: 2958
+shared node number: 491 
+Switch Node Creation Time: 89 ms
+Switch Number: 34
+
+---------------------------------------------------------
+Program Run Time: 1663 ms
+Estimated memory size: 11270208 bytes 
+Whole tree Node number: 13445
+non leaf node number: 10487
+leaf_node number: 2958
+shared node number: 487 
+Switch Node Creation Time: 97 ms
+Switch Number: 34
+
+---------------------------------------------------------
+Program Run Time: 1445 ms
+Estimated memory size: 11355304 bytes 
+Whole tree Node number: 13469
+non leaf node number: 10511
+leaf_node number: 2958
+shared node number: 511 
+Switch Node Creation Time: 118 ms
+Switch Number: 34
+
+---------------------------------------------------------
+Program Run Time: 6043 ms
+Estimated memory size: 11922440 bytes 
+Whole tree Node number: 16911
+non leaf node number: 16503
+leaf_node number: 408
+shared node number: 6503 
+Switch Node Creation Time: 40 ms
+Switch Number: 34
+
+---------------------------------------------------------
+Program Run Time: 1276 ms
+Estimated memory size: 11327224 bytes 
+Whole tree Node number: 13484
+non leaf node number: 10526
+leaf_node number: 2958
+shared node number: 526 
+Switch Node Creation Time: 80 ms
+Switch Number: 34
+
+---------------------------------------------------------
+Program Run Time: 1217 ms
+Estimated memory size: 11260816 bytes 
+Whole tree Node number: 13445
+non leaf node number: 10487
+leaf_node number: 2958
+shared node number: 487 
+Switch Node Creation Time: 83 ms
+Switch Number: 34
+
+---------------------------------------------------------
+Program Run Time: 1254 ms
+Whole tree Node number: 13452
+non leaf node number: 10494
+leaf_node number: 2958
+shared node number: 494 
+Switch Node Creation Time: 76 ms
+Switch Number: 34
+
+---------------------------------------------------------
+Program Run Time: 1227 ms
+Whole tree Node number: 13498
+non leaf node number: 10540
+leaf_node number: 2958
+shared node number: 540 
+Switch Node Creation Time: 79 ms
+Switch Number: 34
+
+---------------------------------------------------------
+Program Run Time: 1243 ms
+Whole tree Node number: 13466
+non leaf node number: 10508
+leaf_node number: 2958
+shared node number: 508 
+Switch Node Creation Time: 93 ms
+Switch Number: 34
+
+---------------------------------------------------------
+Program Run Time: 1260 ms
+Whole tree Node number: 13481
+non leaf node number: 10523
+leaf_node number: 2958
+shared node number: 523 
+Switch Node Creation Time: 74 ms
+Switch Number: 34
+Estimated memory size: 11380608 bytes 
+
+---------------------------------------------------------
+Program Run Time: 1255 ms
+Whole tree Node number: 13470
+non leaf node number: 10512
+leaf_node number: 2958
+shared node number: 512 
+Switch Node Creation Time: 82 ms
+Switch Number: 34
+
+Estimated memory size: 11424056 bytes 
+---------------------------------------------------------
+
+
+Program Run Time: 1308 ms
+Whole tree Node number: 13486
+non leaf node number: 10528
+leaf_node number: 2958
+shared node number: 528 
+Switch Node Creation Time: 77 ms
+Switch Number: 34
+
+Estimated memory size: 139075800 bytes 
+---------------------------------------------------------
+Program Run Time: 1276 ms
+Whole tree Node number: 13490
+non leaf node number: 10532
+leaf_node number: 2958
+shared node number: 532 
+Switch Node Creation Time: 91 ms
+Switch Number: 34
+
+Estimated memory size: 118446304 bytes 
+---------------------------------------------------------
+Program Run Time: 1190 ms
+Whole tree Node number: 13591
+non leaf node number: 10459
+leaf_node number: 3132
+shared node number: 459 
+Switch Node Creation Time: 90 ms
+Switch Number: 36
+
+Estimated memory size: 96902560 bytes 
+---------------------------------------------------------
+Program Run Time: 1237 ms
+Whole tree Node number: 13604
+non leaf node number: 10472
+leaf_node number: 3132
+shared node number: 472 
+Switch Node Creation Time: 87 ms
+Switch Number: 36
+
+Estimated memory size: 93059032 bytes 
+---------------------------------------------------------
+Program Run Time: 1248 ms
+Whole tree Node number: 13616
+non leaf node number: 10484
+leaf_node number: 3132
+shared node number: 484 
+Switch Node Creation Time: 84 ms
+Switch Number: 36
+
+Estimated memory size: 112047592 bytes 
+---------------------------------------------------------
+Program Run Time: 1283 ms
+Whole tree Node number: 13603
+non leaf node number: 10471
+leaf_node number: 3132
+shared node number: 471 
+Switch Node Creation Time: 98 ms
+Switch Number: 36
+
+Estimated memory size: 103112312 bytes 
+---------------------------------------------------------
+Program Run Time: 1205 ms
+Whole tree Node number: 13589
+non leaf node number: 10457
+leaf_node number: 3132
+shared node number: 457 
+Switch Node Creation Time: 105 ms
+Switch Number: 36
+
+Estimated memory size: 102356424 bytes 
+---------------------------------------------------------
+Program Run Time: 1221 ms
+Whole tree Node number: 13568
+non leaf node number: 10436
+leaf_node number: 3132
+shared node number: 436 
+Switch Node Creation Time: 78 ms
+Switch Number: 36
+
+Estimated memory size: 97193496 bytes 
+---------------------------------------------------------
+Program Run Time: 1250 ms
+Whole tree Node number: 13595
+non leaf node number: 10463
+leaf_node number: 3132
+shared node number: 463 
+Switch Node Creation Time: 85 ms
+Switch Number: 36
+
+Estimated memory size: 86388408 bytes 
+---------------------------------------------------------
+Program Run Time: 1226 ms
+Whole tree Node number: 13614
+non leaf node number: 10482
+leaf_node number: 3132
+shared node number: 482 
+Switch Node Creation Time: 103 ms
+Switch Number: 36
+
+Estimated memory size: 111635328 bytes 
+---------------------------------------------------------
+Program Run Time: 5277 ms
+Whole tree Node number: 13606
+non leaf node number: 10474
+leaf_node number: 3132
+shared node number: 474 
+Switch Node Creation Time: 63 ms
+Switch Number: 36
+
+Estimated memory size: 168236224 bytes 
+---------------------------------------------------------
+Program Run Time: 913 ms
+Whole tree Node number: 13588
+non leaf node number: 10456
+leaf_node number: 3132
+shared node number: 456 
+Switch Node Creation Time: 58 ms
+Switch Number: 36
+
+Estimated memory size: 285782064 bytes 
+---------------------------------------------------------
+Program Run Time: 1477 ms
+Whole tree Node number: 13606
+non leaf node number: 10474
+leaf_node number: 3132
+shared node number: 474 
+Switch Node Creation Time: 80 ms
+Switch Number: 36
+
+Estimated memory size: 138291752 bytes 
+-----------------------------new way-------------------------------
+Program Run Time: 1423 ms
+Whole tree Node number: 13490
+non leaf node number: 10358
+leaf_node number: 3132
+shared node number: 358 
+Switch Node Creation Time: 84 ms
+Switch Number: 36
+
+Estimated memory size: 146087912 bytes 
+--------------------------new way with nodes ancetors Map-------------------------------
+Program Run Time: 804 ms
+Whole tree Node number: 13568
+non leaf node number: 10436
+leaf_node number: 3132
+shared node number: 436 
+Switch Node Creation Time: 111 ms
+Switch Number: 36
+
+Estimated memory size: 216684288 bytes 
+-----------------------new way with nodes ancetors Map SET AND FIX MAX----------------------------------
+Program Run Time: 963 ms
+Whole tree Node number: 13780
+non leaf node number: 10648
+leaf_node number: 3132
+shared node number: 648 
+Switch Node Creation Time: 116 ms
+Switch Number: 36
+
+Estimated memory size: 42044048 bytes 
+---------------------------------------------------------
+Program Run Time: 2153 ms
+Whole tree Node number: 17862
+non leaf node number: 17427
+leaf_node number: 435
+shared node number: 7427 
+Switch Node Creation Time: 41 ms
+Switch Number: 36
+
+Estimated memory size: 44197560 bytes 
+---------------------------------------------------------
+Program Run Time: 1854 ms
+Whole tree Node number: 17760
+non leaf node number: 17325
+leaf_node number: 435
+shared node number: 7325 
+Switch Node Creation Time: 42 ms
+Switch Number: 36
+
+Estimated memory size: 518643904 bytes 
+---------------------------------------------------------
+Program Run Time: 854 ms
+Whole tree Node number: 13605
+non leaf node number: 10473
+leaf_node number: 3132
+shared node number: 473 
+Switch Node Creation Time: 87 ms
+Switch Number: 36
+
+Estimated memory size: 234939584 bytes 
+---------------------------------------------------------

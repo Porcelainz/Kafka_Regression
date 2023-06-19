@@ -1,0 +1,109 @@
+[0m[[0m[31merror[0m] [0m[0m/home/pcdm/hann/Kafka_Regression/src/main/scala/Experiment2/Experiment2_1.scala:1:12: object apache is not a member of package org[0m
+[0m[[0m[31merror[0m] [0m[0mimport org.apache.spark.util.SizeEstimator[0m
+[0m[[0m[31merror[0m] [0m[0m           ^[0m
+[0m[[0m[31merror[0m] [0m[0m/home/pcdm/hann/Kafka_Regression/src/main/scala/Experiment2/Experiment2_1.scala:3:12: object han is not a member of package com[0m
+[0m[[0m[31merror[0m] [0m[0mimport com.han.ATree[0m
+[0m[[0m[31merror[0m] [0m[0m           ^[0m
+[0m[[0m[31merror[0m] [0m[0m/home/pcdm/hann/Kafka_Regression/src/main/scala/Experiment2/Experiment2_1.scala:22:10: value between is not a member of object scala.util.Random[0m
+[0m[[0m[31merror[0m] [0m[0mpossible cause: maybe a semicolon is missing before `value between'?[0m
+[0m[[0m[31merror[0m] [0m[0m        .between(2, 6) // Choose a random number of clauses between 2 and 5[0m
+[0m[[0m[31merror[0m] [0m[0m         ^[0m
+[0m[[0m[31merror[0m] [0m[0m/home/pcdm/hann/Kafka_Regression/src/main/scala/Experiment2/Experiment2_1.scala:26:46: value between is not a member of object scala.util.Random[0m
+[0m[[0m[31merror[0m] [0m[0m        val clauseLength = scala.util.Random.between([0m
+[0m[[0m[31merror[0m] [0m[0m                                             ^[0m
+[0m[[0m[31merror[0m] [0m[0m/home/pcdm/hann/Kafka_Regression/src/main/scala/Experiment2/Experiment2_1.scala:57:22: not found: type ATree[0m
+[0m[[0m[31merror[0m] [0m[0m      val tree = new ATree(s"Experiment_1")[0m
+[0m[[0m[31merror[0m] [0m[0m                     ^[0m
+[0m[[0m[31merror[0m] [0m[0m/home/pcdm/hann/Kafka_Regression/src/main/scala/Experiment2/Experiment2_1.scala:64:24: not found: value SizeEstimator[0m
+[0m[[0m[31merror[0m] [0m[0m      val memorySize = SizeEstimator.estimate(tree)[0m
+[0m[[0m[31merror[0m] [0m[0m                       ^[0m
+[0m[[0m[31merror[0m] [0m[0m/home/pcdm/hann/Kafka_Regression/src/main/scala/Experiment2/Experiment2_1.scala:75:23: not found: type ATree[0m
+[0m[[0m[31merror[0m] [0m[0m      val tree2 = new ATree(s"Experiment_2")[0m
+[0m[[0m[31merror[0m] [0m[0m                      ^[0m
+[0m[[0m[31merror[0m] [0m[0m/home/pcdm/hann/Kafka_Regression/src/main/scala/Experiment2/Experiment2_1.scala:82:25: not found: value SizeEstimator[0m
+[0m[[0m[31merror[0m] [0m[0m      val memorySize2 = SizeEstimator.estimate(tree2)[0m
+[0m[[0m[31merror[0m] [0m[0m                        ^[0m
+[0m[[0m[31merror[0m] [0m[0m/home/pcdm/hann/Kafka_Regression/src/main/scala/Experiment2/Experiment2_11.scala:23:18: not found: type ATree[0m
+[0m[[0m[31merror[0m] [0m[0m  val tree = new ATree("Experiment_211")[0m
+[0m[[0m[31merror[0m] [0m[0m                 ^[0m
+[0m[[0m[31merror[0m] [0m[0m/home/pcdm/hann/Kafka_Regression/src/main/scala/Experiment2/Experiment2_12.scala:1:12: object han is not a member of package com[0m
+[0m[[0m[31merror[0m] [0m[0mimport com.han.ATree[0m
+[0m[[0m[31merror[0m] [0m[0m           ^[0m
+[0m[[0m[31merror[0m] [0m[0m/home/pcdm/hann/Kafka_Regression/src/main/scala/Experiment2/Experiment2_12.scala:3:12: object apache is not a member of package org[0m
+[0m[[0m[31merror[0m] [0m[0mimport org.apache.spark.util.SizeEstimator[0m
+[0m[[0m[31merror[0m] [0m[0m           ^[0m
+[0m[[0m[31merror[0m] [0m[0m/home/pcdm/hann/Kafka_Regression/src/main/scala/Experiment2/Experiment2_12.scala:12:38: value between is not a member of object scala.util.Random[0m
+[0m[[0m[31merror[0m] [0m[0m  val numClauses = scala.util.Random.between(2, 6) // Choose a random number of clauses between 2 and 5[0m
+[0m[[0m[31merror[0m] [0m[0m                                     ^[0m
+[0m[[0m[31merror[0m] [0m[0m/home/pcdm/hann/Kafka_Regression/src/main/scala/Experiment2/Experiment2_12.scala:16:42: value between is not a member of object scala.util.Random[0m
+[0m[[0m[31merror[0m] [0m[0m    val clauseLength = scala.util.Random.between(1, 4) // Choose a random length for each clause between 1 and 3[0m
+[0m[[0m[31merror[0m] [0m[0m                                         ^[0m
+[0m[[0m[31merror[0m] [0m[0m/home/pcdm/hann/Kafka_Regression/src/main/scala/Experiment2/Experiment2_12.scala:40:18: not found: type ATree[0m
+[0m[[0m[31merror[0m] [0m[0m  val tree = new ATree("Experiment_1")[0m
+[0m[[0m[31merror[0m] [0m[0m                 ^[0m
+[0m[[0m[31merror[0m] [0m[0m/home/pcdm/hann/Kafka_Regression/src/main/scala/Experiment2/Experiment2_12.scala:46:20: not found: value SizeEstimator[0m
+[0m[[0m[31merror[0m] [0m[0m  val memorySize = SizeEstimator.estimate(tree)[0m
+[0m[[0m[31merror[0m] [0m[0m                   ^[0m
+[0m[[0m[31merror[0m] [0m[0m/home/pcdm/hann/Kafka_Regression/src/main/scala/Experiment2/Experiment2_13.scala:4:12: object apache is not a member of package org[0m
+[0m[[0m[31merror[0m] [0m[0mimport org.apache.spark.util.SizeEstimator[0m
+[0m[[0m[31merror[0m] [0m[0m           ^[0m
+[0m[[0m[31merror[0m] [0m[0m/home/pcdm/hann/Kafka_Regression/src/main/scala/Experiment2/Experiment2_13.scala:5:12: object han is not a member of package com[0m
+[0m[[0m[31merror[0m] [0m[0mimport com.han.ATree[0m
+[0m[[0m[31merror[0m] [0m[0m           ^[0m
+[0m[[0m[31merror[0m] [0m[0m/home/pcdm/hann/Kafka_Regression/src/main/scala/Experiment2/Experiment2_13.scala:31:38: value between is not a member of object scala.util.Random[0m
+[0m[[0m[31merror[0m] [0m[0m  val numClauses = scala.util.Random.between(2, 6) // Choose a random number of clauses between 2 and 5[0m
+[0m[[0m[31merror[0m] [0m[0m                                     ^[0m
+[0m[[0m[31merror[0m] [0m[0m/home/pcdm/hann/Kafka_Regression/src/main/scala/Experiment2/Experiment2_13.scala:35:42: value between is not a member of object scala.util.Random[0m
+[0m[[0m[31merror[0m] [0m[0m    val clauseLength = scala.util.Random.between(1, 4) // Choose a random length for each clause between 1 and 3[0m
+[0m[[0m[31merror[0m] [0m[0m                                         ^[0m
+[0m[[0m[31merror[0m] [0m[0m/home/pcdm/hann/Kafka_Regression/src/main/scala/Experiment2/Experiment2_13.scala:60:18: not found: type ATree[0m
+[0m[[0m[31merror[0m] [0m[0m  val tree = new ATree("Experiment_1")[0m
+[0m[[0m[31merror[0m] [0m[0m                 ^[0m
+[0m[[0m[31merror[0m] [0m[0m/home/pcdm/hann/Kafka_Regression/src/main/scala/Experiment2/Experiment2_13.scala:66:20: not found: value SizeEstimator[0m
+[0m[[0m[31merror[0m] [0m[0m  val memorySize = SizeEstimator.estimate(tree)[0m
+[0m[[0m[31merror[0m] [0m[0m                   ^[0m
+[0m[[0m[31merror[0m] [0m[0m/home/pcdm/hann/Kafka_Regression/src/main/scala/Experiment2/Experiment2_1_P18.scala:1:12: object apache is not a member of package org[0m
+[0m[[0m[31merror[0m] [0m[0mimport org.apache.spark.util.SizeEstimator[0m
+[0m[[0m[31merror[0m] [0m[0m           ^[0m
+[0m[[0m[31merror[0m] [0m[0m/home/pcdm/hann/Kafka_Regression/src/main/scala/Experiment2/Experiment2_1_P18.scala:3:12: object han is not a member of package com[0m
+[0m[[0m[31merror[0m] [0m[0mimport com.han.ATree[0m
+[0m[[0m[31merror[0m] [0m[0m           ^[0m
+[0m[[0m[31merror[0m] [0m[0m/home/pcdm/hann/Kafka_Regression/src/main/scala/Experiment2/Experiment2_1_P18.scala:13:10: value between is not a member of object scala.util.Random[0m
+[0m[[0m[31merror[0m] [0m[0mpossible cause: maybe a semicolon is missing before `value between'?[0m
+[0m[[0m[31merror[0m] [0m[0m        .between(2, 6) // Choose a random number of clauses between 2 and 5[0m
+[0m[[0m[31merror[0m] [0m[0m         ^[0m
+[0m[[0m[31merror[0m] [0m[0m/home/pcdm/hann/Kafka_Regression/src/main/scala/Experiment2/Experiment2_1_P18.scala:17:46: value between is not a member of object scala.util.Random[0m
+[0m[[0m[31merror[0m] [0m[0m        val clauseLength = scala.util.Random.between([0m
+[0m[[0m[31merror[0m] [0m[0m                                             ^[0m
+[0m[[0m[31merror[0m] [0m[0m/home/pcdm/hann/Kafka_Regression/src/main/scala/Experiment2/Experiment2_1_P18.scala:53:22: not found: type ATree[0m
+[0m[[0m[31merror[0m] [0m[0m      val tree = new ATree(s"Experiment_$i")[0m
+[0m[[0m[31merror[0m] [0m[0m                     ^[0m
+[0m[[0m[31merror[0m] [0m[0m/home/pcdm/hann/Kafka_Regression/src/main/scala/Experiment2/Experiment2_1_P18.scala:60:24: not found: value SizeEstimator[0m
+[0m[[0m[31merror[0m] [0m[0m      val memorySize = SizeEstimator.estimate(tree)[0m
+[0m[[0m[31merror[0m] [0m[0m                       ^[0m
+[0m[[0m[31merror[0m] [0m[0m/home/pcdm/hann/Kafka_Regression/src/main/scala/Experiment2/Experiment2_1_P36.scala:1:12: object apache is not a member of package org[0m
+[0m[[0m[31merror[0m] [0m[0mimport org.apache.spark.util.SizeEstimator[0m
+[0m[[0m[31merror[0m] [0m[0m           ^[0m
+[0m[[0m[31merror[0m] [0m[0m/home/pcdm/hann/Kafka_Regression/src/main/scala/Experiment2/Experiment2_1_P36.scala:3:12: object han is not a member of package com[0m
+[0m[[0m[31merror[0m] [0m[0mimport com.han.ATree[0m
+[0m[[0m[31merror[0m] [0m[0m           ^[0m
+[0m[[0m[31merror[0m] [0m[0m/home/pcdm/hann/Kafka_Regression/src/main/scala/Experiment2/Experiment2_1_P36.scala:7:12: object han is not a member of package com[0m
+[0m[[0m[31merror[0m] [0m[0mimport com.han.MemoryChecker[0m
+[0m[[0m[31merror[0m] [0m[0m           ^[0m
+[0m[[0m[31merror[0m] [0m[0m/home/pcdm/hann/Kafka_Regression/src/main/scala/Experiment2/Experiment2_1_P36.scala:32:10: value between is not a member of object scala.util.Random[0m
+[0m[[0m[31merror[0m] [0m[0mpossible cause: maybe a semicolon is missing before `value between'?[0m
+[0m[[0m[31merror[0m] [0m[0m        .between(2, 3) // Choose a random number of clauses between 2 and 5[0m
+[0m[[0m[31merror[0m] [0m[0m         ^[0m
+[0m[[0m[31merror[0m] [0m[0m/home/pcdm/hann/Kafka_Regression/src/main/scala/Experiment2/Experiment2_1_P36.scala:36:46: value between is not a member of object scala.util.Random[0m
+[0m[[0m[31merror[0m] [0m[0m        val clauseLength = scala.util.Random.between([0m
+[0m[[0m[31merror[0m] [0m[0m                                             ^[0m
+[0m[[0m[31merror[0m] [0m[0m/home/pcdm/hann/Kafka_Regression/src/main/scala/Experiment2/Experiment2_1_P36.scala:46:86: value between is not a member of object scala.util.Random[0m
+[0m[[0m[31merror[0m] [0m[0m          atoms += (predicate + operators(Random.nextInt(operators.length)) + Random.between(1, 30)) //predicate with value[0m
+[0m[[0m[31merror[0m] [0m[0m                                                                                     ^[0m
+[0m[[0m[31merror[0m] [0m[0m/home/pcdm/hann/Kafka_Regression/src/main/scala/Experiment2/Experiment2_1_P36.scala:74:22: not found: type ATree[0m
+[0m[[0m[31merror[0m] [0m[0m      val tree = new ATree(s"Experiment_$i")[0m
+[0m[[0m[31merror[0m] [0m[0m                     ^[0m
+[0m[[0m[31merror[0m] [0m[0m/home/pcdm/hann/Kafka_Regression/src/main/scala/Experiment2/Experiment2_1_P36.scala:101:24: not found: value MemoryChecker[0m
+[0m[[0m[31merror[0m] [0m[0m      val memorySize = MemoryChecker.getObjectSize(tree)[0m
+[0m[[0m[31merror[0m] [0m[0m                       ^[0m
+[0m[[0m[31merror[0m] [0m[0m35 errors found[0m

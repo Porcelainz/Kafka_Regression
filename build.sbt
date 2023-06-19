@@ -20,5 +20,8 @@ libraryDependencies ++= Seq(
                             "com.lihaoyi" %% "os-lib" % "0.9.0",
                             "com.typesafe.akka" %% "akka-actor" % "2.7.0",
                             "org.scalaj" %% "scalaj-http" % "2.4.2",
-                            "io.spray" %%  "spray-json" % "1.3.6"
+                            "io.spray" %%  "spray-json" % "1.3.6",
+                            "org.scala-lang.modules" %% "scala-parallel-collections" % "1.0.0",
+                            "io.github.stephankoelle" % "jamm" % "0.4.1"
+
 )
