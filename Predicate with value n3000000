@@ -8,3 +8,13 @@ Switch Number: 36
 
 Estimated memory size: 4679070120 bytes 
 ---------------------------------------------------------
+Program Run Time: 13529865 ms
+Whole tree Node number: 5109541
+non leaf node number: 5106409
+leaf_node number: 3132
+shared node number: 2106409 
+Switch Node Creation Time: 370 ms
+Switch Number: 36
+
+Estimated memory size: 4372145560 bytes 
+---------------------------------------------------------

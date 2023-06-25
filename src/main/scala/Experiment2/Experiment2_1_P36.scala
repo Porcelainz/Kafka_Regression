@@ -80,7 +80,7 @@ object Experiment2_1_P36 {
     }
 
     
-    val query_num = 200000
+    val query_num = 3000000
     try {
   // Code that may throw an exception
 

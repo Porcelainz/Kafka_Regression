@@ -1,15 +1,23 @@
 package Experiment3
 import scala.collection.mutable.ListBuffer
 import com.han.ATree
+import scala.util.hashing.MurmurHash3
 object Experiment3_3 {
-  def generateID(_expression: String): Long = {
-    val predicatesAndOperators: List[Char] = _expression.toList
-    var id: Int = 0
-    for (char <- predicatesAndOperators) {
-      id += char.hashCode() * char.hashCode()
-    }
+   def generateID(_expression: String): Long = {
+    // val predicatesAndOperators: List[Char] = _expression.toList
+    // var id: Int = 0
+    
+    
+    // for (char <- predicatesAndOperators) {
+    //   id += char.hashCode() * char.hashCode()
+    // }
+    val seed = 0 // Seed value for the hash function
+    val components = _expression.split('^').sorted.mkString("^") // Sort components for consistent ordering
+    val hash:Long = MurmurHash3.stringHash(components, seed)
 
-    id
+    hash
+
+    //id
   }
   def main(args: Array[String]): Unit = {
     val query_set = ListBuffer[String]()

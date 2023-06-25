@@ -14,6 +14,12 @@ import spire.std.array
 import scala.collection.parallel.CollectionConverters._
 import scala.collection.mutable
 import scala.collection.parallel.ParSeq
+import scala.concurrent.Future
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.duration._
+import scala.concurrent.Await
+import scala.util.Failure
+import scala.util.Success
 
 trait Node extends Product with Serializable {
 
@@ -33,7 +39,8 @@ trait Node extends Product with Serializable {
 
 case class Switch_Node(_name: String, val targetNodes: Array[Leaf_Node])
     extends Serializable {
-  var true_false_Map: Map[Int, Array[Array[Leaf_Node]]] = Map.empty
+  var bigger_true_false_Map: Map[Int, Array[Array[Leaf_Node]]] = Map.empty
+  var smaller_true_false_Map: Map[Int, Array[Array[Leaf_Node]]] = Map.empty
   var equal_symbol_Map: Map[Double, Leaf_Node] = Map.empty
   def sortedWithExpression(
       unsorted_Nodes: Array[Leaf_Node]
@@ -61,66 +68,137 @@ case class Switch_Node(_name: String, val targetNodes: Array[Leaf_Node])
 
   def createTrue_False_Map(
       unsortedNodes: Array[Leaf_Node]
-  ): Map[Int, Array[Array[Leaf_Node]]] = {
+  ): Unit/*Map[Int, Array[Array[Leaf_Node]]]*/ = {
     val sortedNodes = sortedWithExpression(unsortedNodes)
     //println("sorted Nodes : "+sortedNodes.mkString(", "))
-    for (i <- 0 until sortedNodes.length) {
-      // println("i" + i)
-      val trueNode = sortedNodes
-        .slice(0, i + 1)
-        .filter(x => x.expression.contains('>'))
-        .concat(
-          sortedNodes
-            .slice(i + 1, sortedNodes.length)
-            .filter(x => x.expression.contains('<'))
-        )
-      val falseNode = sortedNodes
-        .slice(0, i + 1)
-        .filter(x => x.expression.contains('<'))
-        .concat(
-          sortedNodes
-            .slice(i + 1, sortedNodes.length)
-            .filter(x => x.expression.contains('>'))
-        )
-      true_false_Map += (i -> Array(trueNode, falseNode))
+    // for (i <- 0 until sortedNodes.length) {
+    //   // println("i" + i)
+    //   val trueNode = sortedNodes
+    //     .slice(0, i + 1)
+    //     .filter(x => x.expression.contains('>'))
+    //     .concat(
+    //       sortedNodes
+    //         .slice(i + 1, sortedNodes.length)
+    //         .filter(x => x.expression.contains('<'))
+    //     )
+    //   val falseNode = sortedNodes
+    //     .slice(0, i + 1)
+    //     .filter(x => x.expression.contains('<'))
+    //     .concat(
+    //       sortedNodes
+    //         .slice(i + 1, sortedNodes.length)
+    //         .filter(x => x.expression.contains('>'))
+    //     )
+    //   true_false_Map += (i -> Array(trueNode, falseNode))
+    // }
+    // true_false_Map += (-1 -> Array(
+    //   sortedNodes.filter(x => x.expression.contains('<')),
+    //   sortedNodes.filter(x => x.expression.contains('>'))
+    // ))
+    // //true_false_Map.foreach(x => println(x._1 + " " + "True Node: "+x._2(0).mkString(",") + " " + "False Node: "+ x._2(1).mkString(",")))
+    // true_false_Map
+    val for_smaller = sortedNodes.filter(x => x.expression.contains('<'))
+    for (i <- 0 until for_smaller.length) {
+      val trueNode = for_smaller.slice(i+1, for_smaller.length)
+      val falseNode = for_smaller.slice(0, i+1)
+      smaller_true_false_Map += (i -> Array(trueNode, falseNode))
     }
-    true_false_Map += (-1 -> Array(
-      sortedNodes.filter(x => x.expression.contains('<')),
-      sortedNodes.filter(x => x.expression.contains('>'))
+    smaller_true_false_Map += (-1 -> Array(
+      for_smaller.slice(0, for_smaller.length),
+      Array.empty[Leaf_Node]
     ))
-    //true_false_Map.foreach(x => println(x._1 + " " + "True Node: "+x._2(0).mkString(",") + " " + "False Node: "+ x._2(1).mkString(",")))
-    true_false_Map
+    val for_bigger = sortedNodes.filter(x => x.expression.contains('>'))
+    for (i <- 0 until for_bigger.length) {
+      val trueNode = for_bigger.slice(0, i+1)
+      val falseNode = for_bigger.slice(i+1, for_bigger.length)
+      bigger_true_false_Map += (i -> Array(trueNode, falseNode))
+    }
+    bigger_true_false_Map += (-1 -> Array(
+      Array.empty[Leaf_Node],
+      for_bigger.slice(0, for_bigger.length)
+    ))
+  
   }
 
   def receiveValueThenForward(comingValue: Double): Unit = { // Array[Array[Leaf_Node]]
-    binarySearchInNodes(sortedWithExpression(targetNodes), comingValue) match {
+    val switch_receive_time = System.currentTimeMillis()
+    val for_smaller_index = binarySearchInNodes_for_small(sortedWithExpression(targetNodes).filter(x => x.expression.contains('<')), comingValue)
+    // for smaller 
+    for_smaller_index match {
       case -1 => {
-        for (index <- 0 to 1) {
+         for (index <- 0 to 1) {
           if (index == 0) {
-            true_false_Map(-1)(index).map(x =>
+            smaller_true_false_Map(-1)(index).map(x =>
               x.receiveResult(true, comingValue.toString())
             )
+            
+            
           } else {
-            true_false_Map(-1)(index).map(x =>
+            smaller_true_false_Map(-1)(index).map(x =>
               x.receiveResult(false, comingValue.toString())
             )
+            
           }
         }
-
-      } // .map(x => x(0).receiveResult(true)) ; true_false_Map(-1).map(x => x(1).receiveResult(false))
-      case i => {
+      } case i => {
         for (index <- 0 to 1) {
           if (index == 0) {
-            true_false_Map(i)(index).map(x =>
+            if (smaller_true_false_Map.contains(i)) {
+            smaller_true_false_Map(i)(index).map(x =>
               x.receiveResult(true, comingValue.toString())
             )
+            }
+            
           } else {
-            true_false_Map(i)(index).map(x =>
+            if (smaller_true_false_Map.contains(i)) {
+            smaller_true_false_Map(i)(index).map(x =>
               x.receiveResult(false, comingValue.toString())
             )
+            }
+            
           }
         }
-      } // true_false_Map(i) //true_false_Map(i).map(x => x(1).receiveResult(false))
+      }
+    }
+    // for bigger
+    val for_bigger_index = binarySearchInNodes_for_big(sortedWithExpression(targetNodes).filter(x => x.expression.contains('>')), comingValue)
+    for_bigger_index match {
+      case -1 => {
+         for (index <- 0 to 1) {
+          if (index == 0) {
+            bigger_true_false_Map(-1)(index).map(x =>
+              x.receiveResult(true, comingValue.toString())
+            )
+            
+            
+          } else {
+            bigger_true_false_Map(-1)(index).map(x =>
+              x.receiveResult(false, comingValue.toString())
+            )
+            
+          }
+        }
+      } case i => {
+        for (index <- 0 to 1) {
+          if (index == 0) {
+            if (bigger_true_false_Map.contains(i)) {
+              bigger_true_false_Map(i)(index).map(x =>
+                x.receiveResult(true, comingValue.toString())
+              )
+            }
+            
+            
+          } else {
+            if (bigger_true_false_Map.contains(i)) {
+              bigger_true_false_Map(i)(index).map(x =>
+                x.receiveResult(false, comingValue.toString())
+              )
+            }
+            
+            
+          }
+        }
+      }
     }
     //println("why not come here ?" )
     //println(equal_symbol_Map)
@@ -129,57 +207,132 @@ case class Switch_Node(_name: String, val targetNodes: Array[Leaf_Node])
     } else {
       equal_symbol_Map.values.foreach(x => x.receiveResult(false, comingValue.toString()))
     }
+    //val switch_send_out_time = System.currentTimeMillis()
+    //println("Switch processing time: " + (switch_send_out_time - switch_receive_time) + " ms")
   }
+
+  def binarySearchInNodes_for_small(
+      unsortedNodes: Array[Leaf_Node],
+      target: Double
+  ): Int = {
+    val sortedNodes = sortedWithExpression(unsortedNodes)
+    
+    val onlyNumberArray = sortedNodes.map(x =>
+      x.expression
+        .substring(x.expression.indexWhere(Set('>', '<', '=').contains) + 1)
+        .toDouble
+    ).distinct
+ 
+    def findIndex(arr: Array[Double], value: Double):Int = {
+      
+      var result = -1
+      if (arr.length == 1) {
+        //println(arr.mkString(","))
+        if (arr(0) == value) {
+          result = 0
+          
+        } else if ( arr(0) < value) {
+          result = 0
+        }
+      } else {
+        //println(arr.mkString(","))
+        for (i <- 0 until arr.length) {
+          if (arr(i) < value) {
+            result = i
+          
+        }
+      }
+      }
+      result
+    }
+    
+    val final_index = findIndex(onlyNumberArray, target)
+    println("Final index : " + final_index + " From " + target)
+    //final_index
+    final_index
+  }
+
+
+  def binarySearchInNodes_for_big(
+      unsortedNodes: Array[Leaf_Node],
+      target: Double
+  ): Int = {
+    val sortedNodes = sortedWithExpression(unsortedNodes)
+    
+    val onlyNumberArray = sortedNodes.map(x =>
+      x.expression
+        .substring(x.expression.indexWhere(Set('>', '<', '=').contains) + 1)
+        .toDouble
+    ).distinct
+ 
+    def findIndex(arr: Array[Double], value: Double):Int = {
+      
+      var result = -1
+      if (arr.length == 1) {
+        //println(arr.mkString(","))
+        if (arr(0) == value) {
+          result = -1
+          
+        } else if ( arr(0) < value) {
+          result = 0
+        }
+      } else {
+        //println(arr.mkString(","))
+        for (i <- 0 until arr.length) {
+          if (arr(i) < value) {
+            result = i
+          
+        }
+      }
+      }
+      result
+    }
+    
+    val final_index = findIndex(onlyNumberArray, target)
+    println("Final index : " + final_index + " From " + target)
+    //final_index
+    final_index
+  }
+
 
   def binarySearchInNodes(
       unsortedNodes: Array[Leaf_Node],
       target: Double
   ): Int = {
     val sortedNodes = sortedWithExpression(unsortedNodes)
-    // for (node <- sortedNodes) {
-    //   if (node.expression.contains(target) && node.expression.contains('>')) {
-    //     return sortedNodes.indexOf(node) - 1
-    //     } else if (node.expression.contains(target) && node.expression.contains('<')) {
-    //     return sortedNodes.indexOf(node) + 1
-    //     }
-    //   }
+    
     val onlyNumberArray = sortedNodes.map(x =>
       x.expression
         .substring(x.expression.indexWhere(Set('>', '<', '=').contains) + 1)
         .toDouble
-    )
-    var final_index = -1
-    if (onlyNumberArray.contains(target)) {
-      val semi_index = onlyNumberArray.indexOf(target)
-      if (sortedNodes(semi_index).expression.contains('>')) {
-        final_index = semi_index - 1
-      } else if (sortedNodes(semi_index).expression.contains('<')) {
-        final_index = semi_index // + 1
-      } else if (sortedNodes(semi_index).expression.contains('=')) {
-        final_index = semi_index
-      }
-    } else {
-      final_index = findIndex(onlyNumberArray, target)
-    }
-
-    def findIndex(arr: Array[Double], value: Double): Int = {
-      var left = 0
-      var right = arr.length - 1
+    ).distinct
+ 
+    def findIndex(arr: Array[Double], value: Double):Int = {
+      
       var result = -1
-
-      while (left <= right) {
-        val mid = left + (right - left) / 2
-        if (arr(mid) <= value) {
-          result = mid
-          left = mid + 1
-        } else {
-          right = mid - 1
+      if (arr.length == 1) {
+        //println(arr.mkString(","))
+        if (arr(0) == value) {
+          result = 0
+          
+        } else if ( arr(0) < value) {
+          result = 0
         }
+      } else {
+        //println(arr.mkString(","))
+        for (i <- 0 until arr.length) {
+          if (arr(i) < value) {
+            result = i
+          
+        }
+      }
       }
       result
     }
-   println("Final index : " + final_index + " From " + target)
-
+    
+    val final_index = findIndex(onlyNumberArray, target)
+    println("Final index : " + final_index + " From " + target)
+    //final_index
     final_index
   }
 
@@ -263,14 +416,21 @@ case class Inner_Node(val expression: String, var trueCounter: Int)
     //}
      //else {
       if (comes_state == true && comed_Node_Buffer.contains(comesFrom) == false) {
-        println("Into 1")
+        //println("Into 1")
         comed_Node_Buffer += comesFrom
         //comed_Node_Buffer_With_Time += ((comesFrom, System.currentTimeMillis()))
         new_state = check_state()
         if (new_state) {
           if (url != "") {
-            sendNotification()
-            println("True trigger true action send http request to" + url)
+            val f : Future[Unit] = Future {sendNotification()}
+            val result: Unit = Await.result(f, 5.seconds)
+            f.onComplete {
+              case Success(_) =>
+                //println("Notification sent successfully.")
+              case Failure(exception) =>
+                //println(s"Failed to send notification: ${exception.getMessage}")
+            }
+            //println("True trigger true action send http request to" + url)
           }
           state = new_state
           propagateResult(state, value)
@@ -286,7 +446,7 @@ case class Inner_Node(val expression: String, var trueCounter: Int)
           propagateResult(state, value)
         }
       } else if (comes_state == false && comed_Node_Buffer.contains(comesFrom) == true) {
-        println("Into 2")
+        //println("Into 2")
         comed_Node_Buffer -= comesFrom
         //removeFromTimeBuffer(comesFrom)
         new_state = check_state()
@@ -301,7 +461,7 @@ case class Inner_Node(val expression: String, var trueCounter: Int)
         state = new_state
         propagateResult(state, value)
       } else if (comes_state == false && comed_Node_Buffer.contains(comesFrom) == false) {
-        println("Into 3")
+        //println("Into 3")
         //comed_Node_Buffer += comesFrom
         //comed_Node_Buffer_With_Time += ((comesFrom, System.currentTimeMillis()))
         new_state = false
@@ -370,7 +530,7 @@ case class Inner_Node(val expression: String, var trueCounter: Int)
     if (url != "") {
       val current_price =
         current_value.map { case (k, v) => s"$k: $v" }.mkString(", ")
-      println("current_price" + current_price)
+      //println("current_price" + current_price)
       val testRequest = Http(url)
         .postForm(
           Seq(
@@ -544,7 +704,7 @@ case class ATree(name: String) extends Serializable {
     } else {
       for (predicate <- _expression.split('^')) {
         
-      
+      if (is_userQuery) {
         if(nodes_ancestors_expression_Map.contains(predicate)) {
           // Key exists, retrieve the ListBuffer and add the new element
           nodes_ancestors_expression_Map(predicate) += _expression
@@ -553,10 +713,11 @@ case class ATree(name: String) extends Serializable {
           val newSet = Set[String](_expression)
           nodes_ancestors_expression_Map.put(predicate, newSet)
         }
+        } 
       }
       //println("come to here")
       var childExprs = List(_expression)
-      if (_expression.split('^').length > 2){
+      if (_expression.split('^').length > 2 && hen.size> 1){
         childExprs = reorganize(_expression)
       }
       
