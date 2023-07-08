@@ -20,6 +20,7 @@ import scala.concurrent.duration._
 import scala.concurrent.Await
 import scala.util.Failure
 import scala.util.Success
+import java.io.FileWriter
 
 trait Node extends Product with Serializable {
 
@@ -31,13 +32,53 @@ trait Node extends Product with Serializable {
   var trueCounter: Int
   var state: Boolean
   var url: String
+  var happen_time: Long
+  var comed_Node_Buffer: ListBuffer[Node]
   def receiveResult(result: Boolean, value: String, comesFrom: Node): Unit
   def setUrl(url: String): Unit
   def receiveUpdateValue(value: String): Unit
   // def this() = this("",0L)
 }
 
-case class Switch_Node(_name: String, val targetNodes: Array[Leaf_Node])
+
+
+
+
+
+
+class ATree(name: String) extends Serializable {
+  var non_leaf_node :HashMap[Long, Node] = HashMap[Long, Node]()
+  var hen: HashMap[Long, Node] = HashMap[Long, Node]()
+  var root: ListBuffer[Node] = ListBuffer[Node]()
+  var leafNodeArrayBuffer: ArrayBuffer[Node] = ArrayBuffer[Node]()
+  var groupBySource_Map: Map[String, ArrayBuffer[Node]] =
+    Map[String, ArrayBuffer[Node]]()
+  var switch_Node_Map = Map[String, Switch_Node]()
+  var nodes_ancestors_expression_Map: HashMap[String, Set[String]] =
+    HashMap[String, Set[String]]()
+
+
+  trait Node extends Product with Serializable {
+
+  val expression: String
+  var parents: ArrayBuffer[Node]
+  var childs: ArrayBuffer[Node]
+  var useCount: Int
+  var childExprs: ListBuffer[List[String]]
+  var trueCounter: Int
+  var state: Boolean
+  var url: String
+  var happen_time: Long
+  var comed_Node_Buffer: ListBuffer[Node]
+  def receiveResult(result: Boolean, value: String, comesFrom: Node): Unit
+  def setUrl(url: String): Unit
+  def receiveUpdateValue(value: String): Unit
+  // def this() = this("",0L)
+}
+
+
+
+  case class Switch_Node(_name: String, val targetNodes: Array[Leaf_Node])
     extends Serializable {
   var bigger_true_false_Map: Map[Int, Array[Array[Leaf_Node]]] = Map.empty
   var smaller_true_false_Map: Map[Int, Array[Array[Leaf_Node]]] = Map.empty
@@ -121,9 +162,11 @@ case class Switch_Node(_name: String, val targetNodes: Array[Leaf_Node])
   }
 
   def receiveValueThenForward(comingValue: Double): Unit = { // Array[Array[Leaf_Node]]
-    val switch_receive_time = System.currentTimeMillis()
+    //println(System.currentTimeMillis())
+    //println("Switch receive value: " + comingValue + "From :"+ _name)
+    var switch_startTime1 = System.currentTimeMillis()
     val for_smaller_index = binarySearchInNodes_for_small(sortedWithExpression(targetNodes).filter(x => x.expression.contains('<')), comingValue)
-    // for smaller 
+    var switch_endTime1 = System.currentTimeMillis()
     for_smaller_index match {
       case -1 => {
          for (index <- 0 to 1) {
@@ -161,7 +204,9 @@ case class Switch_Node(_name: String, val targetNodes: Array[Leaf_Node])
       }
     }
     // for bigger
+    val switch_startTime2 = System.currentTimeMillis()
     val for_bigger_index = binarySearchInNodes_for_big(sortedWithExpression(targetNodes).filter(x => x.expression.contains('>')), comingValue)
+    val switch_endTime2 = System.currentTimeMillis()
     for_bigger_index match {
       case -1 => {
          for (index <- 0 to 1) {
@@ -207,8 +252,11 @@ case class Switch_Node(_name: String, val targetNodes: Array[Leaf_Node])
     } else {
       equal_symbol_Map.values.foreach(x => x.receiveResult(false, comingValue.toString()))
     }
-    //val switch_send_out_time = System.currentTimeMillis()
+    //var switch_send_out_time = System.currentTimeMillis()
+    //val fw = new FileWriter(s"/home/pcdm/hann/Kafka_Regression/src/main/scala/Experiment2/newData/Switch_proceesin_Time_1000k", true)
     //println("Switch processing time: " + (switch_send_out_time - switch_receive_time) + " ms")
+    //fw.write("Switch processing time: " + ((switch_endTime1- switch_startTime1) + (switch_endTime2 - switch_startTime2))  + " ms with "+ targetNodes.size + " leaf node" + "\n")
+    //fw.close()
   }
 
   def binarySearchInNodes_for_small(
@@ -237,7 +285,7 @@ case class Switch_Node(_name: String, val targetNodes: Array[Leaf_Node])
       } else {
         //println(arr.mkString(","))
         for (i <- 0 until arr.length) {
-          if (arr(i) < value) {
+          if (arr(i) <= value) {
             result = i
           
         }
@@ -247,7 +295,7 @@ case class Switch_Node(_name: String, val targetNodes: Array[Leaf_Node])
     }
     
     val final_index = findIndex(onlyNumberArray, target)
-    println("Final index : " + final_index + " From " + target)
+    //println("Final index : " + final_index + " From " + target)
     //final_index
     final_index
   }
@@ -289,7 +337,7 @@ case class Switch_Node(_name: String, val targetNodes: Array[Leaf_Node])
     }
     
     val final_index = findIndex(onlyNumberArray, target)
-    println("Final index : " + final_index + " From " + target)
+    //println("Final index : " + final_index + " From " + target)
     //final_index
     final_index
   }
@@ -331,14 +379,18 @@ case class Switch_Node(_name: String, val targetNodes: Array[Leaf_Node])
     }
     
     val final_index = findIndex(onlyNumberArray, target)
-    println("Final index : " + final_index + " From " + target)
+    //println("Final index : " + final_index + " From " + target)
     //final_index
     final_index
   }
 
 }
 
-case class Inner_Node(val expression: String, var trueCounter: Int)
+    
+
+
+
+case class Inner_Node(val expression: String)
     extends Node {
   // val expression: String = _expression
   var parents: ArrayBuffer[Node] = ArrayBuffer[Node]()
@@ -349,21 +401,44 @@ case class Inner_Node(val expression: String, var trueCounter: Int)
   // var trueCounter = 0
   var url: String = ""
   var current_value: Map[String, String] = Map.empty
-
+  var trueCounter: Int = 0
   var comed_Node_Buffer = ListBuffer[Node]()
+  var happen_time: Long = 0L
   //var comed_Node_Buffer_With_Time = ListBuffer[(Node, Long)]()
   def setUrl(url: String): Unit = {
     this.url = url
   }
 
   def receiveResult(comes_state: Boolean,value: String,comesFrom: Node): Unit = {
-    println(expression +" Receive result " + comes_state + " from " + comesFrom.expression)
+    //println(expression +" Receive result " + comes_state + " from " + comesFrom.expression)
+    def generateID(expression: String): Long = {
+      val seed = 0 // Seed value for the hash function
+      val components = expression.split('^').sorted.mkString("^") // Sort components for consistent ordering
+      val hash:Long = MurmurHash3.stringHash(components, seed)
+
+      hash
+    }
     def check_state(): Boolean = {
+      //println(expression  +" check with" + comed_Node_Buffer.mkString(","))
+
       if (comed_Node_Buffer.size == childs.size) {
         true
       } else {
         false
       }
+      // var state_result = false
+      // for (child <- childs) {
+      //   if (comed_Node_Buffer.contains(child) == false) {
+      //     state_result =  false
+      //   } else {
+      //     state_result =  true
+      //   }
+      // }
+      // state_result
+      
+
+      
+      
     }
     // def check_state_Seq(): Boolean = {
     //   if (comed_Node_Buffer.size == childs.size) {
@@ -380,6 +455,7 @@ case class Inner_Node(val expression: String, var trueCounter: Int)
     //     val indexToRemove: Int = comed_Node_Buffer_With_Time.indexWhere { case (node, _) => node == target_node }
     //     comed_Node_Buffer_With_Time.remove(indexToRemove)
     //   }
+    synchronized{
     var new_state = false
     // if (expression.contains("Seq")) {
     //   if (comes_state == true && comed_Node_Buffer.contains(comesFrom) == false) {
@@ -415,51 +491,72 @@ case class Inner_Node(val expression: String, var trueCounter: Int)
     //   }
     //}
      //else {
+      var inner_node_receive_time = System.currentTimeMillis()
       if (comes_state == true && comed_Node_Buffer.contains(comesFrom) == false) {
         //println("Into 1")
-        comed_Node_Buffer += comesFrom
-        //comed_Node_Buffer_With_Time += ((comesFrom, System.currentTimeMillis()))
+        // synchronized {
+        //comed_Node_Buffer += comesFrom
+        comed_Node_Buffer.append(comesFrom)
         new_state = check_state()
+        //}
+        //comed_Node_Buffer_With_Time += ((comesFrom, System.currentTimeMillis()))
+        //new_state = check_state()
         if (new_state) {
+          //println("Into here")
           if (url != "") {
-            val f : Future[Unit] = Future {sendNotification()}
-            val result: Unit = Await.result(f, 5.seconds)
-            f.onComplete {
-              case Success(_) =>
-                //println("Notification sent successfully.")
-              case Failure(exception) =>
-                //println(s"Failed to send notification: ${exception.getMessage}")
-            }
+              val future_notification = Future {
+                sendNotification()
+              }
+              // future_notification.onComplete {
+              //   case Success(value) => println("Success!!!!!!!!!")
+              //   case Failure(e) => println("Failure!!!!!!!!!!")
+              // }
+              //sendNotification()
+              
+            
+            
+            //sendNotification()
+            
+            
             //println("True trigger true action send http request to" + url)
           }
           state = new_state
+         
           propagateResult(state, value)
+          
           comed_Node_Buffer.clear()
           // println("True trigger true action send http request to"+ url)
         } else if (state == true && new_state == false) {
           if (url != "") {
-            println(
-              "state turn from TRUE TO FALSE" + " False trigger true action send http request to" + url
-            )
+            //println("state turn from TRUE TO FALSE" + " False trigger true action send http request to" + url)
+            //println("state from true to false " + expression + " from " + comesFrom.expression)
           }
           state = new_state
           propagateResult(state, value)
         }
       } else if (comes_state == false && comed_Node_Buffer.contains(comesFrom) == true) {
         //println("Into 2")
-        comed_Node_Buffer -= comesFrom
-        //removeFromTimeBuffer(comesFrom)
+        //synchronized {
+        //comed_Node_Buffer -= comesFrom
+        comed_Node_Buffer.remove(comed_Node_Buffer.indexOf(comesFrom))
         new_state = check_state()
+        //}
+        //removeFromTimeBuffer(comesFrom)
+        //new_state = check_state()
         if (state == true && new_state == false) {
           if (url != "") {
-            println(
-              "state turn from TRUE TO FALSE" + " False trigger true action send http request to" + url
-            )
+            //println("state turn from TRUE TO FALSE" + " False trigger true action send http request to" + url)
+            //val fw = new FileWriter(s"src/main/scala/Experiment2/6_29/Inner_node_true_to_false_2000k", true)
+            //println("state from true to false " + expression + " from " + comesFrom.expression)
+            //fw.write("state from true to false " + expression + " from " + comesFrom.expression + "\n")
+            //fw.close()
           }
+          state = new_state
+          propagateResult(state, value)
         }
         
-        state = new_state
-        propagateResult(state, value)
+        // state = new_state
+        // propagateResult(state, value)
       } else if (comes_state == false && comed_Node_Buffer.contains(comesFrom) == false) {
         //println("Into 3")
         //comed_Node_Buffer += comesFrom
@@ -467,18 +564,44 @@ case class Inner_Node(val expression: String, var trueCounter: Int)
         new_state = false
         if (state == true && new_state == false) {
           if (url != "") {
-            println(
-              "state turn from TRUE TO FALSE" + " False trigger true action send http request to" + url
-            )
+            //println("state turn from TRUE TO FALSE" + " False trigger true action send http request to" + url)
+            //println("state from false to false " + expression + " from " + comesFrom.expression)
+            //val fw = new FileWriter(s"src/main/scala/Experiment2/6_29/Inner_node_true_to_false_2000k_into3", true)
+            //fw.write("state from true to false " + expression + " from " + comesFrom.expression + "\n")
+            //fw.close()
           }
+          state = new_state
+          propagateResult(state, value)
         }
+        // state = new_state
+        // propagateResult(state, value)
+      } else if (comes_state == true && comed_Node_Buffer.contains(comesFrom) == true) {
+        //println("Into 4")
+        //comed_Node_Buffer -= comesFrom
+        //comed_Node_Buffer_With_Time -= ((comesFrom, System.currentTimeMillis()))
+        new_state = check_state()
         state = new_state
-        propagateResult(state, value)
-      } 
-      
+        if (new_state == true) {
+          propagateResult(state, value)
+          if (url != "") {
+            val future_send = Future {sendNotification()}
+          }
+          //comed_Node_Buffer.clear()
+        }
+        //state = new_state
+        
+        //comed_Node_Buffer.clear()
+      }
+
+      var inner_node_send_out_time = System.currentTimeMillis()
+      if (parents.size >= 5) {
+      //val fw = new FileWriter(s"/home/pcdm/hann/Kafka_Regression/src/main/scala/Experiment2/newData/Inner_node_evaluate_time_1000k", true)
+      //fw.write("Inner node " + expression + " evaluate time: " + (inner_node_send_out_time - inner_node_receive_time) + " ms with parent number "+ parents.size + "\n")
+      //fw.close()
+      }
       //state = new_state
       
-      
+    }
         
       
     //}
@@ -521,16 +644,23 @@ case class Inner_Node(val expression: String, var trueCounter: Int)
   }
 
   def sendUpdateValue(value: String): Unit = {
-    parents.foreach(
+    parents.map(
       _.receiveUpdateValue(expression.split("[<>]").head + ":" + value)
     )
   }
 
   def sendNotification(): Unit = {
+    var send_notification_time = System.currentTimeMillis()
     if (url != "") {
       val current_price =
         current_value.map { case (k, v) => s"$k: $v" }.mkString(", ")
+        //println(System.currentTimeMillis())
       //println("current_price" + current_price)
+      //Thread.sleep(50)
+      // val fw_forsend = new FileWriter(s"src/main/scala/Experiment2/6_29/NotificationSent", true)
+      // fw_forsend.write("Notification sent from " + this.expression + "\n")
+      // fw_forsend.close()
+      if(url == "https://maker.ifttt.com/trigger/scala_event/with/key/cyMr3y7V3Np-gzMAhWE8HM"){
       val testRequest = Http(url)
         .postForm(
           Seq(
@@ -540,8 +670,16 @@ case class Inner_Node(val expression: String, var trueCounter: Int)
           )
         )
         .asString
-      println("Notification sent <- from" + this.expression)
+        println("Notification sent <- " + this.expression)
+      }
+      //println("Notification sent <- from" + this.expression)
 
+    }
+    var send_notification_end_time = System.currentTimeMillis()
+    if (parents.size > 5) {
+    //val fw = new FileWriter(s"src/main/scala/Experiment2/6_29/Inner_node_sendNotification_Time_2000k", true)
+    //fw.write("Send notification time: " + (send_notification_end_time - send_notification_time) + " ms with parent number" + parents.size + " \n")
+    //fw.close()
     }
   }
 
@@ -561,19 +699,24 @@ case class Inner_Node(val expression: String, var trueCounter: Int)
     // }
 
     def check_state_Seq(self_expr:String, target_expr:ListBuffer[Node]): Boolean = {
-      
-      def check_Array_Order(arr1: Array[String], arr2: Array[String]):Boolean = {
+      //println("come here?")
+      def check_Array_Order(arr1: Array[String], arr2: Array[Node]):Boolean = {
       if (arr1.length != arr2.length) {
         false
       } else {
         var i = 0
-        while (i < arr1.length) {
-          if (arr1(i) != arr2(i)) {
-            return false
+        var result = false
+        while (i < arr1.length-1) {
+          if (hen(generateID(arr1(i))).happen_time > hen(generateID(arr1(i+1))).happen_time) {
+          result =  false
+            
+          } else {
+          result =  true
+            i += 1
           }
-          i += 1
         }
-        true
+        //println("Result" + result)
+        result
       }
     }
       // println("CHECK STATE SEQ!!!!!!!!!!!!!")
@@ -583,15 +726,15 @@ case class Inner_Node(val expression: String, var trueCounter: Int)
         //println("CHECK STATE SEQ!!!!!!!!!!!!!")
         // val pattern: Regex = "Seq\\((.*?)\\)".r
         val expr1 = self_expr.split('^')
-        var expr2 = ArrayBuffer[String]()
+        var expr2 = ArrayBuffer[Node]()
         for(node <- target_expr) {
-          expr2 += node.expression
+          expr2 += node
         }
         println(expr1.mkString(","))
         println(expr2.mkString(","))
         // println(expr1 == expr2.toArray)
         
-        println(check_Array_Order(expr1, expr2.toArray))
+        //println(check_Array_Order(expr1, expr2.toArray))
         check_Array_Order(expr1, expr2.toArray)
         
         //println(expr1 == expr2)
@@ -611,7 +754,6 @@ case class Inner_Node(val expression: String, var trueCounter: Int)
   }
 
 }
-
 case class Leaf_Node(val expression: String) extends Node {
   // val expression: String = _expression
   var parents: ArrayBuffer[Node] = ArrayBuffer[Node]()
@@ -621,15 +763,23 @@ case class Leaf_Node(val expression: String) extends Node {
   var state: Boolean = false
   var trueCounter = 0
   var url: String = ""
-
+  var comed_Node_Buffer: ListBuffer[Node] = ListBuffer[Node]()
+  var happen_time = 0L
   // var value:String = ""
   def receiveResult(new_state: Boolean,value: String,sendsFrom: Node = new Leaf_Node("0")): Unit = {
-    // println(expression + " receive result: " + new_state)
-
-    (expression + " receive result: " + new_state + " with value: " + value)
+    //println(expression + " receive result: " + new_state)
+    happen_time = System.currentTimeMillis()
+    //(expression + " receive result: " + new_state + " with value: " + value)
     state = new_state
+    //val fw = new FileWriter(s"/home/pcdm/hann/Kafka_Regression/src/main/scala/Experiment2/newData/Leaf_Node_Propagate_Time_1000k", true)  
+    var propagate_start_time = System.currentTimeMillis()
+    var propagate_end_time = System.currentTimeMillis()
     propagateResult(new_state, value)
-
+    
+    
+    //fw.write("Leaf_Node " + expression + " Processing time: " + (propagate_end_time - propagate_start_time) + " ms " + "with " + parents.size + " parents\n")
+    //fw.close()
+    
     // if (state == true && new_state == true) {
 
     //   updateValue(value)
@@ -650,18 +800,21 @@ case class Leaf_Node(val expression: String) extends Node {
 
   }
 
-  def propagateResult(
-      result: Boolean,
-      value: String /*,sendsFrom: String = expression*/
-  ): Unit = {
-    parents.foreach(
-      _.receiveResult(result, expression.split("[<>]").head + ":" + value, this)
-    )
-    // if (state == true) {
-    //   state = false
-    // } else {
-    //   state = true
-    // }
+  def propagateResult(result: Boolean, value: String /*,sendsFrom: String = expression*/): Unit = {
+    // parents.map(
+    //   _.receiveResult(result, expression.split("[<>]").head + ":" + value, this)
+    // )
+
+    val future_Propagate = parents.map { x =>
+      Future {
+        x.receiveResult(result, expression.split("[<>]").head + ":" + value, this)
+      }
+    }
+
+    val combinedFuture: Future[ArrayBuffer[Unit]] = Future.sequence(future_Propagate)
+    Await.result(combinedFuture, Duration.Inf)
+    
+    
   }
   def updateValue(value: String): Unit = {
     parents.foreach(
@@ -673,16 +826,14 @@ case class Leaf_Node(val expression: String) extends Node {
   def receiveUpdateValue(value: String): Unit = {}
 }
 
-case class ATree(name: String) extends Serializable {
-  var non_leaf_node :HashMap[Long, Node] = HashMap[Long, Node]()
-  var hen: HashMap[Long, Node] = HashMap[Long, Node]()
-  var root: ListBuffer[Node] = ListBuffer[Node]()
-  var leafNodeArrayBuffer: ArrayBuffer[Node] = ArrayBuffer[Node]()
-  var groupBySource_Map: Map[String, ArrayBuffer[Node]] =
-    Map[String, ArrayBuffer[Node]]()
-  var switch_Node_Map = Map[String, Switch_Node]()
-  var nodes_ancestors_expression_Map: HashMap[String, Set[String]] =
-    HashMap[String, Set[String]]()
+
+
+
+
+
+
+
+  
   def add_query(query: String): Unit = {
     if ( query.contains('∨') ) {
       query.split('∨').foreach(x => insert(x,true))
@@ -769,6 +920,7 @@ case class ATree(name: String) extends Serializable {
       node.childExprs += childExprs
 
       if (flag == true) {
+        //println("gere")
         selfAdjust(node)
 
       }
@@ -784,7 +936,7 @@ case class ATree(name: String) extends Serializable {
     val node = if (!expr.contains('^') && !expr.contains("Seq")) {
       new Leaf_Node(expr)
     } else {
-      new Inner_Node(expr, 0)
+      new Inner_Node(expr)
     }
     for (childNode <- childNodes) {
       node.childs += childNode
@@ -1157,6 +1309,7 @@ case class ATree(name: String) extends Serializable {
       if (!child.parents.contains(node)) {
         child.parents += node
       }
+    
     }
   }
 
